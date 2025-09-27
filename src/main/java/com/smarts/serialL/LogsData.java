@@ -1,5 +1,9 @@
 package com.smarts.serialL;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.LocalDateTime;
@@ -13,9 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import com.smarts.Comunications.APIRest;
-import com.smarts.Comunications.SerialHelper;
-import com.smarts.ManageDataStorage.DataCsv;
+import com.smarts.Comunications.DataBase.Dao;
+import com.smarts.Comunications.Protocols.APIRest;
+import com.smarts.Comunications.Protocols.SerialHelper;
+import com.smarts.Config.ConfigSensor;
 
 public class LogsData {
 
@@ -45,7 +50,7 @@ public class LogsData {
     private Integer logginParameters;
     private Integer loggedParameters;
     private byte sizeData;
-    private final DataCsv writerLogs;
+    private final ConfigSensor writerLogs;
     public int timeLog1;
     public int timeLog2;
     public int timeLog3;
@@ -70,6 +75,11 @@ public class LogsData {
     private final String urlLog3Json = "http://54.167.252.128:3030/api/v1/logs3/webhook";
     private final String urlAlarmJson = "http://54.167.252.128:3030/api/v1/alarms/webhook";
     private final String urlFaultJson = "http://54.167.252.128:3030/api/v1/change-history/webhook";
+     private String nameCollectionLog1="";
+     private String nameCollectionLog2="";
+     private String nameCollectionLog3="";
+    private String path="";
+    private String pathLogs="/var/log/.Smarts/logLogs.txt";
 
     private String[][] meterTypeAndSize = {
             {
@@ -158,7 +168,7 @@ public class LogsData {
 
     public LogsData() {
         loadAuditLogs();
-        writerLogs = new DataCsv();
+        writerLogs = new ConfigSensor();
         maxBuffer();
         readLogginSettings();
         firstLogsData();
@@ -172,7 +182,7 @@ public class LogsData {
         getAlarmanLogs("AlarmanLogs"+id+".csv", urlAlarm);  */
 
     }
-
+    
     private String getId() {
         serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E), 14));
         return id.toString() + ";";
@@ -242,7 +252,7 @@ public class LogsData {
         auditLogMap.put(156, "User Pres Mon Cal Offset");
         auditLogMap.put(157, "User Pres Mon Cal Span");
     }
-
+    
     private void maxBuffer() {
         byte[] salida = ((SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x44), 16)));
         for (byte b : salida) {
@@ -389,7 +399,6 @@ public class LogsData {
         System.out.println("Lastlogs3");
     getLastLogs(startAddressLogs3, ptrLog3, "/home/EPI5/.Smarts/logs3"+id+".csv",urlLog3Json);
        //getLastLogs(startAddressLogs3, ptrLog3, "logs3"+id+".csv", urlLog3Json);
-
     }
 
     private void getAlarmanLogs(String nameLogs, String api) {

@@ -27,6 +27,12 @@
    <artifactId>jSerialComm</artifactId>
    <version>[2.0.0,3.0.0]</version>
 </dependency>
+<dependency>
+  <groupId>org.mongodb</groupId>
+  <artifactId>mongodb-driver-sync</artifactId>
+  <version>4.11.1</version>
+</dependency>
+
 </dependencies>
 
 

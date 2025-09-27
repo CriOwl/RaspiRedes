@@ -1,5 +1,5 @@
 package com.smarts;
-import com.smarts.Comunications.SerialHelper;
+import com.smarts.Comunications.Protocols.SerialHelper;
 import com.smarts.serialL.ManageData;
 
 public class Main {
@@ -7,6 +7,7 @@ public class Main {
    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             SerialHelper.eliminarUsoSerial();
         }));
+   
    ManageData Dresser = new ManageData();
   }
 }

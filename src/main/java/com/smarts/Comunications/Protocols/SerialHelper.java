@@ -1,4 +1,4 @@
-package com.smarts.Comunications;
+package com.smarts.Comunications.Protocols;
 
 import java.io.BufferedReader;
 import java.io.File;

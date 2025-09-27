@@ -1,6 +1,6 @@
 package com.smarts.serialL;
 
-import com.smarts.Comunications.SerialHelper;
+import com.smarts.Comunications.Protocols.SerialHelper;
 public class ManageData {
     private final LiveData liveDataSmarts;
     private final LogsData logsData;
