@@ -6,8 +6,10 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 public abstract class DatabaseHelp {
-    private static final String Bd_Path = "mongodb://localhost:27017/";
-    private static final String Bd_Base = "Smarts";
+    private static final String Bd_Path = "mongodb+srv://sujetodeprueba1234_db_user:6mGda81Q2SN8X5VF@cluster0.17z9r15.mongodb.net/";
+    private static final String Bd_Base = "smarts";
+    //6mGda81Q2SN8X5VF
+    //
     private static MongoClient mongoClient;
     private static MongoDatabase database;
 

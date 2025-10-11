@@ -28,8 +28,16 @@ public class Websockets {
     private  String uriLog1;
     private  String uriLog2;
     private  String uriLog3;
+    private  String uriAlarm;
+    private  String uriAudit;
+    private  String uriFault;
+    private  String uriLog1Json;
+    private  String uriLog2Json;
+    private  String uriLog3Json;
+    private  String uriAlarmJson;
+    private  String uriFaultJson;
     private  String token;
-    private final String pathLogs = "/var/log/.Smarts/logWebS"+ConfigSensor.port+".txt";
+    private final String pathLogs = "/var/log/.Smarts/logWebS.txt";
     private  boolean isLogin;
     private  boolean isSLL;
     private  boolean isToken;
@@ -54,9 +62,9 @@ public class Websockets {
             e.printStackTrace(); 
         }
     }
-    public  void sendJson(String json) {
+    private void sendJson(String json,String uriL) {
         try {
-            String fullUri = (isSLL) ? "wss://" + uri : "ws://" + uri;
+            String fullUri = (isSLL) ? "wss://" + uriL : "ws://" + uriL;
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             
             ClientEndpointConfig config = null;
@@ -107,14 +115,39 @@ public class Websockets {
     }
     public  void sendLog2(String path){
         sendFile(path, uriLog2);
-        
     }
     public  void sendLog3(String path){
         sendFile(path, uriLog3);
-        
+    }
+    public  void sendLog1Json(String Json){
+        sendJson(Json, uriLog1Json);
+    }
+    public  void sendLog2Json(String Json){
+        sendJson(Json, uriLog2Json);
+    }
+    public  void sendLog3Json(String Json){
+        sendJson(Json, uriLog3Json);
+    }
+    public  void sendAudit(String path){
+        sendFile(path, uriAudit);
+    }
+    public  void sendAlarm(String path){
+        sendFile(path, uriAlarm);
+    }
+    public  void sendFault(String path){
+        sendFile(path, uriFault);
+    }
+    public void sendFaultJson(String Json){
+        sendJson(Json, uriFaultJson);
+    }
+    public  void sendAlarmJson(String Json){
+        sendJson(Json, uriAlarmJson);
+    }
+    public  void sendData(String Json){
+        sendJson(Json, uri);
     }
     
-    private   void sendFile(String path, String uriL) {
+    private void sendFile(String path, String uriL) {
         try {
             String fullUri = (isSLL) ? "wss://" + uriL : "ws://" + uriL;
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -176,16 +209,24 @@ public class Websockets {
     
     private void setConfiguration() {
         try {
-                seturi(ConfigSensor.getURIWebS());
-                setUser(ConfigSensor.getUserWebS());
-                setPassword(ConfigSensor.getPasswordWebS());
-                setToken(ConfigSensor.getTokenWebS());
-                setSLL(ConfigSensor.isSLLWebS());
-                setLogin(ConfigSensor.isLoginWebS());
-                setToken(ConfigSensor.isTokenWebS());
-                setUriLog1(ConfigSensor.getTopicLog1WebS());
-                setUriLog2(ConfigSensor.getTopicLog2WebS());
-                setUriLog3(ConfigSensor.getTopicLog3WebS());
+                seturi(ConfigSensor.URIWebS);
+                setUser(ConfigSensor.userWebS);
+                setPassword(ConfigSensor.passwordWebS);
+                setToken(ConfigSensor.TokenWebS);
+                setSLL(ConfigSensor.isSLLWebS);
+                setLogin(ConfigSensor.isLoginWebS);
+                setToken(ConfigSensor.isTokenWebS);
+                setUriLog1(ConfigSensor.topicLog1WebS);
+                setUriLog2(ConfigSensor.topicLog2WebS);
+                setUriLog3(ConfigSensor.topicLog3WebS);
+                setUriFault(ConfigSensor.topicFaultWebS);
+                setUriAlarm(ConfigSensor.topicAlarmWebS);
+                setUriAudit(ConfigSensor.topicAuditWebS);
+                setUriFaultJson(ConfigSensor.topicFaultJsonWebS);
+                setUriAlarmJson(ConfigSensor.topicAlarmJsonWebS);
+                setUriLog1Json(ConfigSensor.topicLog1JsonWebS);
+                setUriLog2Json(ConfigSensor.topicLog2JsonWebS);
+                setUriLog3Json(ConfigSensor.topicLog3JsonWebS);
 
         } catch (Exception e) {
             writeLogs(e);
@@ -250,5 +291,53 @@ public class Websockets {
     }
     public void setUriLog3(String uriLog3) {
         this.uriLog3 = uriLog3;
+    }
+     public String getUriLog1Json() {
+        return uriLog1Json;
+    }
+    public void setUriLog1Json(String uriLog1Json) {
+        this.uriLog1Json = uriLog1Json;
+    }
+    public String getUriLog2Json() {
+        return uriLog2Json;
+    }
+    public void setUriLog2Json(String uriLog2Json) {
+        this.uriLog2Json = uriLog2Json;
+    }
+    public String getUriLog3Json() {
+        return uriLog3Json;
+    }
+    public void setUriLog3Json(String uriLog3Json) {
+        this.uriLog3Json = uriLog3Json;
+    }
+    public String getUriAlarm() {
+        return uriAlarm;
+    }
+    public void setUriAlarm(String uriAlarm) {
+        this.uriAlarm = uriAlarm;
+    }
+    public String getUriAudit() {
+        return uriAudit;
+    }
+    public void setUriAudit(String uriAudit) {
+        this.uriAudit = uriAudit;
+    }
+    public String getUriFault() {
+        return uriFault;
+    }
+    public void setUriFault(String uriFault) {
+        this.uriFault = uriFault;
+    }
+    public String getUriAlarmJson() {
+        return uriAlarmJson;
+    }
+    public void setUriAlarmJson(String uriAlarmJson) {
+        this.uriAlarmJson = uriAlarmJson;
+    }
+    public String getUriFaultJson() {
+        return uriFaultJson;
+    }
+    public void setUriFaultJson(String uriFaultJson) {
+        this.uriFaultJson = uriFaultJson;
     }
 }

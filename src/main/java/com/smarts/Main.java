@@ -4,10 +4,10 @@ import com.smarts.serialL.ManageData;
 
 public class Main {
   public static void main(String[] args) throws Exception {
+    
    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             SerialHelper.eliminarUsoSerial();
         }));
-   
    ManageData Dresser = new ManageData();
   }
 }

@@ -14,6 +14,7 @@ import java.util.Scanner;
 import com.smarts.Comunications.DataBase.Dao;
 import com.smarts.Comunications.ManageComunications;
 import com.smarts.Comunications.Protocols.SerialHelper;
+import com.smarts.Config.ConfigM2;
 import com.smarts.Config.ConfigSensor;
 
 public class LiveData {
@@ -28,18 +29,23 @@ public class LiveData {
     private Float rawpressure;
     private Float correctionFactor;
     private Float zFactor;
-    private String baterryVoltage;
     private Float flowRate;
     private Integer UncorrectUnderFail;
     private Float zeroTemp;
     private Float spanTemp;
     private Float zeroPressure;
     private Float spanPressure;
+    private String baterryVoltage;
+    private Byte  presentFaults;
+    private Byte  occurredFaults;
+    private Byte  presentAlarms;
+    private Byte  occurredAlarms;
+    private String  dateTimeMC;
     private String type;
     private ConfigSensor fileCsv;
     private String timeSend;
     private String dataCsv;
-    public Integer time=ConfigSensor.getTimeSendMs();
+    public Integer time=ConfigSensor.timeSendMs;
     private Integer back;
     private Integer readBufferDresser;
     private Integer accumulatedCorrectVolumencurrentDay;
@@ -48,12 +54,11 @@ public class LiveData {
     private Integer accumulatedCorrectVolumenPreviousMonth;
     private Integer HighestDailyVolumenCurrentMonth;
     private Integer HighestDailyVolumenPreviousMonth;
-    private String nameCollection="";
     private String path="";
-    private String pathLogs="/var/log/.Smarts/logLiveData.txt";
+    private final String pathLogs="/var/log/.Smarts/logLiveData.txt";
     
     public LiveData() {
-        liveDataRequest();
+
     }
     private void writeLogs(Exception ex) {
         try {
@@ -72,54 +77,6 @@ public class LiveData {
             e.printStackTrace(); 
         }
     }
-    private void getConfiguration() {
-        if(id==0){
-            return;
-        }
-        path="/etc/.Smarts/"+id.toString()+"_MC2.txt";
-        try {
-            File configFile = new File(path);
-            if (!configFile.exists()) {
-                nameCollection=Dao.date(id.toString());
-                configFile.createNewFile();
-                FileWriter writer = new FileWriter(configFile,false);
-                writer.write("collectionLiveData:"+nameCollection);
-                writer.close();
-                return;
-            }
-            try (Scanner lector = new Scanner(configFile)) {
-                while (lector.hasNextLine()) { 
-                    String line = lector.nextLine();
-                    if (line.contains("collectionLiveData:")) {
-                        line=line.substring(line.indexOf(':')+1);
-                        nameCollection=line;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            writeLogs(e);
-        }
-    }
-    private void setConfiguration(String value) {
-        if(id==0){
-            return;
-        }
-        path="/etc/.Smarts/"+id.toString()+"_MC2.txt";
-        try {
-            File configFile = new File(path);
-            FileWriter writer = new FileWriter(configFile,false);
-            if (!configFile.exists()) {
-                nameCollection=Dao.date(id.toString());
-                configFile.createNewFile();
-                writer.write("collectionLiveData:"+nameCollection);
-                writer.close();
-                return;
-            }
-            writer.write(value);
-        } catch (Exception e) {
-            writeLogs(e);
-        }
-    }
     public void liveDataRequest() {
         serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E), 14));
         readDataLive(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6C), 70));
@@ -128,13 +85,10 @@ public class LiveData {
         // 40));
         if (id != 0
         && !(correctedResidual + zeroPressure + uncorrectedResidual + spanTemp + temperature + pressure == 0)) {
-            getConfiguration();
-            ///////////////////////////////
             ManageComunications.sendData(toJson());
-            ////////////////
-            //fileCsv.liveDataStreaming(toString(),id.toString());
-            nameCollection=Dao.addJsonCollection(toJson(),nameCollection,id.toString());
-            setConfiguration(nameCollection);
+            Dao.collectionLiveData(toJson(),ConfigM2.getLiveDataCollection(),getSerialRaspi());
+            ConfigM2.setDataCollection(Dao.addJsonCollection(toJson(),ConfigM2.getDataCollection(),id.toString(),"DataCollection"));
+            ConfigM2.updateConfigM2();
         }
     }
     
@@ -145,11 +99,12 @@ public class LiveData {
         setSpanPressure(Arrays.copyOfRange(readData, 20, 24));
     }
     
-    private void serialData(byte[] readBuffer) {
+    public String serialData(byte[] readBuffer) {
         id = 0;
         id = ByteBuffer.wrap(Arrays.copyOfRange(readBuffer, readBuffer.length - 6, readBuffer.length - 2))
         .order(ByteOrder.LITTLE_ENDIAN).getInt();
         System.out.println(id);
+        return id.toString();
     }
     
     private void readAccumulatedVolumen(byte[] dataAccumulated) {
@@ -178,7 +133,7 @@ public class LiveData {
         setCorrectionFactor(Arrays.copyOfRange(readBufferLive, 48, 52));
         setzFactor(Arrays.copyOfRange(readBufferLive, 52, 56));
     }
-        
+    
     @Override
     public String toString() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -215,24 +170,31 @@ public class LiveData {
     private String toJson() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
-        String Json = "{" + '"' + "Id" + '"' + ": " + getSerialRaspi() + ","
-        + '"' + "SERIAL" + '"' + ": " + id + ","
-        + '"' + "CORRECTED_VOLUME" + '"' + ": " + getCorrectedVolumen() + ","
-        + '"' + "UNCORRECTED_VOLUME" + '"' + ": " + getUncorrectedVolumen() + ","
-        + '"' + "CORRECTED_RESIDUAL" + '"' + ": " + getCorrectedResidualString() + ","
-        + '"' + "UNCORRECTED_RESIDUAL" + '"' + ": " + getUncorrectedResidualString() + ","
-        + '"' + "FLOW_RATE" + '"' + ": " + getFlowRate() + ","
-        + '"' + "UNCORRECTED_UNDER_FAULT" + '"' + ": " + getUncorrectUnderFail() + ","
-        + '"' + "TEMPERATURE" + '"' + ": " + getTemperature() + ","
-        + '"' + "RAW_TEMPERATURE" + '"' + ": " + getRawtemperature() + ","
-        + '"' + "ZERO_TEMP" + '"' + ": " + getZeroTemp() + ","
-        + '"' + "SPAN_TEMP" + '"' + ": " + getSpanTemp() + ","
-        + '"' + "PRESSURE" + '"' + ": " + getPressure() + ","
-        + '"' + "RAW_PRESSURE" + '"' + ": " + getRawpressure() + ","
-        + '"' + "ZERO_PRESSURE" + '"' + ": " + getZeroPressure() + ","
-        + '"' + "SPAN_PRESSURE" + '"' + ": " + getSpanPressure() + ","
-        + '"' + "CORRECTION_FACTOR" + '"' + ": " + getCorrectionFactor() + ","
-        + '"' + "Z_FACTOR" + '"' + ": " + getzFactor() + ","
+        String Json = "{" 
+        //+ '"'+ "Id" + '"' + ": " + getSerialRaspi() + ","
+        + '"' + "DeviceUID" + '"' + ": " + id + ","
+        + '"' + "CorrectedVolume" + '"' + ": " + getCorrectedVolumen() + ","
+        + '"' + "UncorrectedVolume" + '"' + ": " + getUncorrectedVolumen() + ","
+        + '"' + "CorrectedResidual" + '"' + ": " + getCorrectedResidualString() + ","
+        + '"' + "UncorrectedResidual" + '"' + ": " + getUncorrectedResidualString() + ","
+        + '"' + "FlowRate" + '"' + ": " + getFlowRate() + ","
+        + '"' + "UncorrectedUnderFault" + '"' + ": " + getUncorrectUnderFail() + ","
+        + '"' + "Temperature" + '"' + ": " + getTemperature() + ","
+        + '"' + "RawTemperature" + '"' + ": " + getRawtemperature() + ","
+        + '"' + "Pressure" + '"' + ": " + getPressure() + ","
+        + '"' + "RawPressure" + '"' + ": " + getRawpressure() + ","
+        + '"' + "CorrectionFactor" + '"' + ": " + getCorrectionFactor() + ","
+        + '"' + "PresentFaults" + '"' + ": " + getPresentFaults() + ","
+        + '"' + "OccurredFaults" + '"' + ": " + getOccurredFaults() + ","
+        + '"' + "PresentAlarms" + '"' + ": " + getPresentAlarms() + ","
+        + '"' + "OccurredAlarms" + '"' + ": " + getOccurredAlarms() + ","
+        + '"' + "DateTime" + '"' + ": " + getDateTimeMC() + ","
+        + '"' + "BatteryVoltage" + '"' + ": " + getBaterryVoltage()
+        //Agregar un ,
+        //+ '"' + "ZERO_TEMP" + '"' + ": " + getZeroTemp() + ","
+        //+ '"' + "SPAN_TEMP" + '"' + ": " + getSpanTemp() + ","
+        //+ '"' + "ZERO_PRESSURE" + '"' + ": " + getZeroPressure() + ","
+        //+ '"' + "SPAN_PRESSURE" + '"' + ": " + getSpanPressure() + ","
         /*
         * + '"' + "Accumulated Correct Volumen Day" + '"' + ": " +
         * getAccumulatedCorrectVolumencurrentDay() + ","
@@ -246,8 +208,8 @@ public class LiveData {
         * getHighestDailyVolumenCurrentMonth() + ","
         * + '"' + "Highest Daily Volumen Previous Month" + '"' + ": " +
         * getHighestDailyVolumenPreviousMonth() + ","
-        */
-        + '"' + "DATE" + '"' + ": " + '"' + dtf.format(now) + '"' + "}";
+        */ 
+        + "}";
         System.out.println(Json);
         return Json;
     }
@@ -360,11 +322,6 @@ public class LiveData {
         return baterryVoltage;
     }
     
-    public void setBaterryVoltage(byte[] baterryVoltage) {
-        Integer trasformation = ByteBuffer.wrap(baterryVoltage).order(ByteOrder.BIG_ENDIAN).getInt();
-        this.baterryVoltage = trasformation.toString();
-        System.out.println(this.baterryVoltage);
-    }
     
     public Float getFlowRate() {
         return flowRate;
@@ -470,6 +427,35 @@ public class LiveData {
         HighestDailyVolumenPreviousMonth = ByteBuffer.wrap(highestDailyVolumenPreviousMonth)
         .order(ByteOrder.LITTLE_ENDIAN).getInt();
     }
+    public void setBaterryVoltage(byte[] baterryVoltage) {
+        Long transformation = ByteBuffer.wrap(baterryVoltage).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xFFFFFFFFL; 
+        this.baterryVoltage = transformation.toString();
+    }
+    public Byte getOccurredFaults() {
+        return occurredFaults;
+    }
+    public void setOccurredFaults(Byte occurredFaults) {
+        this.occurredFaults = occurredFaults;
+    }
+    public Byte getPresentAlarms() {
+        return presentAlarms;
+    }
+    public void setPresentAlarms(Byte presentAlarms) {
+        this.presentAlarms = presentAlarms;
+    }
+    public Byte getOccurredAlarms() {
+        return occurredAlarms;
+    }
+    public void setOccurredAlarms(Byte occurredAlarms) {
+        this.occurredAlarms = occurredAlarms;
+    }
+    public String getDateTimeMC() {
+        return dateTimeMC;
+    }
+    public void setDateTimeMC(byte[] dateTimeMC) {
+        Long transformation = ByteBuffer.wrap(dateTimeMC).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xFFFFFFFFL; 
+        this.dateTimeMC = transformation.toString();
+    }
     private  String getSerialRaspi(){
         try {
             File serial=new File("/proc/cpuinfo");
@@ -486,7 +472,16 @@ public class LiveData {
                 }
             }
         } catch (Exception e) {
+            writeLogs(e);
         }
         return "100";
+    }
+
+    public Byte getPresentFaults() {
+        return presentFaults;
+    }
+
+    public void setPresentFaults(Byte presentFaults) {
+        this.presentFaults = presentFaults;
     }
 }

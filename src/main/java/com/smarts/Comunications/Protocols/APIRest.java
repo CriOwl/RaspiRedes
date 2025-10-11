@@ -26,6 +26,14 @@ public class APIRest {
     private  String uriLog1;
     private  String uriLog2;
     private  String uriLog3;
+    private  String uriALarm;
+    private  String uriFault;
+    private  String uriAudit;
+    private  String uriLog1Json;
+    private  String uriLog2Json;
+    private  String uriLog3Json;
+    private  String uriALarmJson;
+    private  String uriFaultJson;
     private  String token;
     private  String user;
     private  String password;
@@ -33,10 +41,7 @@ public class APIRest {
     private  boolean isLogin;
     private  boolean isToken;
     private  boolean isApiKey;
-    private final String delimeter = ",";
-    private final String pathLogs = "/var/log/.Smarts/logApiRest"+ConfigSensor.port+".txt";
-    
-    
+    private final String pathLogs = "/var/log/.Smarts/logApiRest.txt";
     public APIRest() {
         setConfiguration();
     }
@@ -59,23 +64,31 @@ public class APIRest {
     }
     private void setConfiguration() {
         try {
-                setUri(uri);
-                setToken(token);
-                setUser(user);
-                setPassword(password);
-                setUriLog1(uriLog1);
-                setUriLog2(uriLog2);
-                setUriLog3(uriLog3);
-                setApiKey(apiKey);
-                setIsApiKey(isApiKey);
-                setToken(isToken);
-                setIsLogin(isLogin);            
+                setUri(ConfigSensor.uriApi);
+                setToken(ConfigSensor.tokenApi);
+                setUser(ConfigSensor.userApi);
+                setPassword(ConfigSensor.passwordApi);
+                setUriLog1(ConfigSensor.uriLog1Api);
+                setUriLog2(ConfigSensor.uriLog2Api);
+                setUriLog3(ConfigSensor.uriLog3Api);
+                setUriALarm(ConfigSensor.uriAlarmApi);
+                setUriFault(ConfigSensor.uriFaultApi);
+                setUriAudit(ConfigSensor.uriAuditApi);
+                setUriALarmJson(ConfigSensor.uriAlarmJsonApi);
+                setUriFaultJson(ConfigSensor.uriFaultJsonApi);
+                setUriLog1Json(ConfigSensor.uriLog1JsonApi);
+                setUriLog2Json(ConfigSensor.uriLog2JsonApi);
+                setUriLog3Json(ConfigSensor.uriLog3JsonApi);
+                setApiKey(ConfigSensor.apiKey);
+                setIsApiKey(ConfigSensor.isApikey);
+                setToken(ConfigSensor.isTokenApi);
+                setIsLogin(ConfigSensor.isLoginApi);            
         } catch (Exception e) {
             writeLogs(e);
         }
     }
     
-    public  void senDataApiLive(String dataJson) {
+    public  void sendApiLive(String dataJson,String uriApi) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = null;
         try {
@@ -83,7 +96,7 @@ public class APIRest {
                 String auth = user + ":" + password;
                 String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
                 request = HttpRequest.newBuilder()
-                .uri(new URI(uri))
+                .uri(new URI(uriApi))
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Basic "+encodedAuth)
                 .POST(HttpRequest.BodyPublishers.ofString(dataJson))
@@ -91,7 +104,7 @@ public class APIRest {
             }
             else if(isToken){
                 request = HttpRequest.newBuilder()
-                .uri(new URI(uri))
+                .uri(new URI(uriApi))
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer "+token)
                 .POST(HttpRequest.BodyPublishers.ofString(dataJson))
@@ -99,14 +112,14 @@ public class APIRest {
             }
             else if(isApiKey){
                 request = HttpRequest.newBuilder()
-                .uri(new URI(uri))
+                .uri(new URI(uriApi))
                 .header("Content-Type", "application/json")
                 .header( "x-api-key",apiKey)
                 .POST(HttpRequest.BodyPublishers.ofString(dataJson))
                 .build();
             }else{
                 request = HttpRequest.newBuilder()
-                .uri(new URI(uri))
+                .uri(new URI(uriApi))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(dataJson))
                 .build();  
@@ -128,6 +141,36 @@ public class APIRest {
     public void sendLog3(String path){
         sendDataFileLogs(path,uriLog3);
         
+    }
+    public void sendAlarm(String path){
+        sendDataFileLogs(path,uriALarm);
+    }
+    public void sendFault(String path){
+        sendDataFileLogs(path,uriFault);
+        
+    }
+    public void sendAudit(String path){
+        sendDataFileLogs(path,uriAudit);
+        
+    }
+    public void sendLog1Json(String Json){
+        sendApiLive(Json,uriLog1Json);
+    }
+    public void sendLog2Json(String Json){
+        sendApiLive(Json,uriLog1Json);
+        
+    }
+    public void sendLog3Json(String Json){
+        sendApiLive(Json,uriLog1Json);
+    }
+     public void sendDataApi(String Json){
+        sendApiLive(Json,uri);
+    }
+    public void sendAlarmJson(String Json){
+        sendApiLive(Json,uriALarmJson);
+    }
+     public void sendFaultJson(String Json){
+        sendApiLive(Json,uriFaultJson);
     }
     private  void sendDataFileLogs(String path, String api) {
         try {
@@ -308,6 +351,60 @@ public class APIRest {
     public void setIsApiKey(boolean isApiKey) {
         this.isApiKey = isApiKey;
     }
-    
+
+    public String getUriLog1Json() {
+        return uriLog1Json;
+    }
+
+    public void setUriLog1Json(String uriLog1Json) {
+        this.uriLog1Json = uriLog1Json;
+    }
+
+    public String getUriLog2Json() {
+        return uriLog2Json;
+    }
+
+    public void setUriLog2Json(String uriLog2Json) {
+        this.uriLog2Json = uriLog2Json;
+    }
+
+    public String getUriLog3Json() {
+        return uriLog3Json;
+    }
+
+    public void setUriLog3Json(String uriLog3Json) {
+        this.uriLog3Json = uriLog3Json;
+    }
+    public String getUriALarm() {
+        return uriALarm;
+    }
+    public void setUriALarm(String uriALarm) {
+        this.uriALarm = uriALarm;
+    }
+    public String getUriFault() {
+        return uriFault;
+    }
+    public void setUriFault(String uriFault) {
+        this.uriFault = uriFault;
+    }
+    public String getUriAudit() {
+        return uriAudit;
+    }
+    public void setUriAudit(String uriAudit) {
+        this.uriAudit = uriAudit;
+    }
+    public String getUriALarmJson() {
+        return uriALarmJson;
+    }
+    public void setUriALarmJson(String uriALarmJson) {
+        this.uriALarmJson = uriALarmJson;
+    }
+    public String getUriFaultJson() {
+        return uriFaultJson;
+    }
+    public void setUriFaultJson(String uriFaultJson) {
+        this.uriFaultJson = uriFaultJson;
+    }
+
     
 }

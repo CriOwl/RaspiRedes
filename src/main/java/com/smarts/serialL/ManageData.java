@@ -1,13 +1,25 @@
 package com.smarts.serialL;
 
 import com.smarts.Comunications.Protocols.SerialHelper;
+import com.smarts.Config.ConfigM2;
+import com.smarts.Config.ConfigSensor;
 public class ManageData {
     private final LiveData liveDataSmarts;
     private final LogsData logsData;
 
     public ManageData(){
+        ConfigSensor.setConfiguration();
         SerialHelper.findPort();
+        ///--se necesita un id para generar las update ConfigM2.setConfiguration();
         liveDataSmarts=new LiveData();
+        while (liveDataSmarts.serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E), 14)).equals("0")){ 
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+            }
+        }
+        ConfigM2.idMC2=liveDataSmarts.serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E), 14));
+        ConfigM2.setConfiguration();
         logsData=new LogsData();
         setupDataOneProcess();
     }

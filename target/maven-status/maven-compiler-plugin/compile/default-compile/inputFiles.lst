@@ -1,0 +1,14 @@
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Comunications/DataBase/Dao.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Comunications/DataBase/DatabaseHelp.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Comunications/ManageComunications.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Comunications/Protocols/APIRest.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Comunications/Protocols/Mqtt.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Comunications/Protocols/SerialHelper.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Comunications/Protocols/Websockets.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Comunications/Protocols/Witsml.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Config/ConfigM2.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Config/ConfigSensor.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/Main.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/serialL/LiveData.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/serialL/LogsData.java
+/home/criowl/Criowl/SmartsProyecto/SmartsMaven/smarts/src/main/java/com/smarts/serialL/ManageData.java

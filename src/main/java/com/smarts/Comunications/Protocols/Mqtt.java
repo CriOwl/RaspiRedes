@@ -20,10 +20,18 @@ public class Mqtt {
     private String topicL1;
     private String topicL2;
     private String topicL3;
+    private String topicAlarm;
+    private String topicFault;
+    private String topicAudit;
+    private String topicJsonL1;
+    private String topicJsonL2;
+    private String topicJsonL3;
+    private String topicFaultJson;
+    private String topicAlarmJson;
     private String topic;
     private String user;
     private String password;
-    private final String pathLogs = "/var/log/.Smarts/logMqtt"+ConfigSensor.port+".txt";
+    private final String pathLogs = "/var/log/.Smarts/logMqtt.txt";
     private boolean isLogin;
     private boolean isSLL;
     private final String delimeter = ",";
@@ -48,7 +56,7 @@ public class Mqtt {
             e.printStackTrace(); 
         }
     }
-    private void openConnect(String json){
+    private void openConnect(String json,String topicL){
         try {
             String brokerCliend=(isSLL)?"ssl://":"tcp://";
             brokerCliend=brokerCliend+broker;
@@ -62,7 +70,7 @@ public class Mqtt {
             client.connect(options);
             MqttMessage message = new MqttMessage(json.getBytes());
             message.setQos(1);
-            client.publish(topic, message);
+            client.publish(topicL, message);
             Thread.sleep(1000);
             client.disconnect();            
         } catch (Exception e) {
@@ -71,7 +79,7 @@ public class Mqtt {
     }
     
     public void sendMessages(String json){
-        openConnect(json);
+        openConnect(json,topic);
     }
     public void sendLog1(File document){
         openConnectFile(document, topicL1);
@@ -81,6 +89,30 @@ public class Mqtt {
     }
     public void sendLog3(File document){
         openConnectFile(document, topicL3);
+    }
+    public void sendLog1Json(String json){
+        openConnect(json, topicJsonL1);
+    }
+    public void sendLog2Json(String json){
+        openConnect(json, topicJsonL2);
+    }
+    public void sendLog3Json(String json){
+        openConnect(json, topicJsonL3);
+    }
+    public  void sendAudit(File document){
+        openConnectFile(document, topicAudit);
+    }
+    public  void sendAlarm(File document){
+        openConnectFile(document, topicAlarm);
+    }
+    public  void sendFault(File document){
+        openConnectFile(document, topicFault);
+    }
+    public void sendFaultJson(String Json){
+        openConnect(Json, topicFaultJson);
+    }
+    public  void sendAlarmJson(String Json){
+        openConnect(Json, topicAlarmJson);
     }
     private void openConnectFile(File document, String topicS) {
         try {
@@ -133,16 +165,24 @@ public class Mqtt {
     
     private void setConfiguration() {
         try {
-                setClientID(ConfigSensor.getClientIdMQTT());
-                setBroker(ConfigSensor.getBrokerMQTT());
-                setTopic(ConfigSensor.getTopicDataMQTT());
-                setUser(ConfigSensor.getUserMQTT());
-                setTopicL1(ConfigSensor.getTopicLog1MQTT());
-                setTopicL2(ConfigSensor.getTopicLog2MQTT());
-                setTopicL3(ConfigSensor.getTopicLog3MQTT());
-                setPassword(ConfigSensor.getPasswordMQTT());
-                setSLL(ConfigSensor.isSLLMQTT());
-                setLogin(ConfigSensor.isLoginMQTT());
+                setClientID(ConfigSensor.clientIdMQTT);
+                setBroker(ConfigSensor.brokerMQTT);
+                setTopic(ConfigSensor.topicDataMQTT);
+                setUser(ConfigSensor.userMQTT);
+                setTopicL1(ConfigSensor.topicLog1MQTT);
+                setTopicL2(ConfigSensor.topicLog2MQTT);
+                setTopicL3(ConfigSensor.topicLog3MQTT);
+                setTopicAlarm(ConfigSensor.topicAlarmMQTT);
+                setTopicAudit(ConfigSensor.topicAuditMQTT);
+                setTopicFault(ConfigSensor.topicFaultMQTT);
+                setTopicAlarmJson(ConfigSensor.topicAlarmJsonMQTT);
+                setTopicFaultJson(ConfigSensor.topicFaultJsonMQTT);
+                setTopicJsonL1(ConfigSensor.topicLog1JsonMQTT);
+                setTopicJsonL2(ConfigSensor.topicLog2JsonMQTT);
+                setTopicJsonL3(ConfigSensor.topicLog3JsonMQTT);
+                setPassword(ConfigSensor.passwordMQTT);
+                setSLL(ConfigSensor.isSLLMQTT);
+                setLogin(ConfigSensor.isLoginMQTT);
         } catch (Exception e) {
             writeLogs(e);
         }
@@ -194,5 +234,52 @@ public class Mqtt {
     public void setTopicL3(String topicL3) {
         this.topicL3 = topicL3;
     }
-    
+    public String getTopicJsonL1() {
+        return topicJsonL1;
+    }
+    public void setTopicJsonL1(String topicJsonL1) {
+        this.topicJsonL1 = topicJsonL1;
+    }
+    public String getTopicJsonL2() {
+        return topicJsonL2;
+    }
+    public void setTopicJsonL2(String topicJsonL2) {
+        this.topicJsonL2 = topicJsonL2;
+    }
+    public String getTopicJsonL3() {
+        return topicJsonL3;
+    }
+    public void setTopicJsonL3(String topicJsonL3) {
+        this.topicJsonL3 = topicJsonL3;
+    }
+    public String getTopicAlarm() {
+        return topicAlarm;
+    }
+    public void setTopicAlarm(String topicAlarm) {
+        this.topicAlarm = topicAlarm;
+    }
+    public String getTopicFault() {
+        return topicFault;
+    }
+    public void setTopicFault(String topicFault) {
+        this.topicFault = topicFault;
+    }
+    public String getTopicAudit() {
+        return topicAudit;
+    }
+    public void setTopicAudit(String topicAudit) {
+        this.topicAudit = topicAudit;
+    }
+    public String getTopicFaultJson() {
+        return topicFaultJson;
+    }
+    public void setTopicFaultJson(String topicFaultJson) {
+        this.topicFaultJson = topicFaultJson;
+    }
+    public String getTopicAlarmJson() {
+        return topicAlarmJson;
+    }
+    public void setTopicAlarmJson(String topicAlarmJson) {
+        this.topicAlarmJson = topicAlarmJson;
+    }
 }
