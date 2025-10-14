@@ -22,6 +22,7 @@ import java.util.Base64;
 import com.smarts.Config.ConfigSensor;
 
 public class APIRest {
+    
     private  String uri;
     private  String uriLog1;
     private  String uriLog2;
@@ -41,9 +42,11 @@ public class APIRest {
     private  boolean isLogin;
     private  boolean isToken;
     private  boolean isApiKey;
-    private final String pathLogs = "/var/log/.Smarts/logApiRest.txt";
+    private final String pathLogs = "/home/EPI5/.Smarts/logApiRest.txt";
     public APIRest() {
+        System.out.println("[DEBUG] Iniciando constructor APIRest");
         setConfiguration();
+        System.out.println("[DEBUG] Constructor APIRest finalizado");
     }
     private void writeLogs(Exception ex) {
         try {
@@ -86,9 +89,12 @@ public class APIRest {
         } catch (Exception e) {
             writeLogs(e);
         }
+        System.out.println(toStringConfig());
     }
     
     public  void sendApiLive(String dataJson,String uriApi) {
+        setConfiguration();
+        System.out.println("[DEBUG] Iniciando sendApiLive con URI: " + uriApi + " y Json: " + dataJson);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = null;
         try {
@@ -173,6 +179,8 @@ public class APIRest {
         sendApiLive(Json,uriFaultJson);
     }
     private  void sendDataFileLogs(String path, String api) {
+        setConfiguration();
+        System.out.println("[DEBUG] Iniciando sendDataFileLogs con URI: " + api + " y archivo: " + path);
         try {
             String targetURL = api;
             File fileToUpload = new File(path);
@@ -252,6 +260,29 @@ public class APIRest {
         } catch (IOException | InterruptedException | URISyntaxException e) {
             System.out.println(e);
         }
+    }
+    public String toStringConfig() {
+        return "APIRest{" +
+                "uri='" + uri + '\'' +
+                ", uriLog1='" + uriLog1 + '\'' +
+                ", uriLog2='" + uriLog2 + '\'' +
+                ", uriLog3='" + uriLog3 + '\'' +
+                ", uriALarm='" + uriALarm + '\'' +
+                ", uriFault='" + uriFault + '\'' +
+                ", uriAudit='" + uriAudit + '\'' +
+                ", uriLog1Json='" + uriLog1Json + '\'' +
+                ", uriLog2Json='" + uriLog2Json + '\'' +
+                ", uriLog3Json='" + uriLog3Json + '\'' +
+                ", uriALarmJson='" + uriALarmJson + '\'' +
+                ", uriFaultJson='" + uriFaultJson + '\'' +
+                ", token='" + token + '\'' +
+                ", user='" + user + '\'' +
+                ", password='" + password + '\'' +
+                ", apiKey='" + apiKey + '\'' +
+                ", isLogin=" + isLogin +
+                ", isToken=" + isToken +
+                ", isApiKey=" + isApiKey +
+                '}';
     }
     public  String getUriLog1() {
         return uriLog1;

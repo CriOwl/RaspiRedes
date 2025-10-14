@@ -188,6 +188,7 @@ public  class SerialHelper {
                 byte[] bytesReader=new byte[lenght];
                 while (serialPort.bytesAvailable()>0) {
                     int numRead=serialPort.readBytes(bytesReader, bytesReader.length);
+                    System.out.println("[INFO] Datos recibidos (" + numRead + " bytes): " + bytesToHex(bytesReader));
                 }
                 if(!comprobationCheckSum(bytesReader)){
                     System.out.println("Error checksum");
@@ -201,6 +202,16 @@ public  class SerialHelper {
             return null;
         };
     }
+
+    private static String bytesToHex(byte[] bytes) {
+    if (bytes == null) return "null";
+    StringBuilder sb = new StringBuilder();
+    for (byte b : bytes) {
+        sb.append(String.format("%02X ", b));
+    }
+    return sb.toString().trim();
+}
+
     public static byte[] createDataRequestPacket(byte type) {
         byte[] packet = new byte[11];
         packet[0] = 0x00;

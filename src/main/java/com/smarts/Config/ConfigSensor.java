@@ -67,8 +67,8 @@ public abstract class ConfigSensor {
     public static boolean isApi;   
     public static boolean isWebsocket;   
     public static boolean isWitsml; 
-    private final static String path = "/etc/.Smarts/config_MC2.txt";
-    private final static String pathLogs = "/var/log/.Smarts/logConfig.txt";
+    private final static String path = "/home/EPI5/.Smarts/config.txt";
+    private final static String pathLogs = "/home/EPI5/.Smarts/logConfig.txt";
     private final static String configString="""
                             uriApi:http://dev-lmi.com:3030/api/v1/sensor/webhook
                             tokenApi:null
@@ -83,9 +83,9 @@ public abstract class ConfigSensor {
                             uriAuditApi:http://54.167.252.128:3030/api/v1/upload/audit-logs
                             uriFaultJsonApi:http://54.167.252.128:3030/api/v1/change-history/webhook
                             uriAlarmJsonApi:http://54.167.252.128:3030/api/v1/alarms/webhook
-                            uriLog1JsonApi: http://54.167.252.128:3030/api/v1/logs1/webhook
-                            uriLog2JsonApi: http://54.167.252.128:3030/api/v1/logs2/webhook
-                            uriLog3JsonApi: http://54.167.252.128:3030/api/v1/logs3/webhook
+                            uriLog1JsonApi:http://54.167.252.128:3030/api/v1/logs1/webhook
+                            uriLog2JsonApi:http://54.167.252.128:3030/api/v1/logs2/webhook
+                            uriLog3JsonApi:http://54.167.252.128:3030/api/v1/logs3/webhook
                             isLoginApi:false
                             isTokenApi:flase
                             isApikey:false
@@ -126,7 +126,7 @@ public abstract class ConfigSensor {
                             isSLLWebS:false
                             isTokenWebS:false
                             isApi:true
-                            isMQTT:false
+                            isMQTT:true
                             isWebS:false
                             isWitsml:false
                             timeSendMs:60000""";
@@ -373,6 +373,70 @@ public abstract class ConfigSensor {
         } catch (Exception e) {
             writeLogs(e);
         }
+        System.out.println(toStringConfig());
     }
-            
+    public static String toStringConfig() {
+        return "ConfigSensor{" +
+                "brokerMQTT='" + brokerMQTT + '\'' +
+                ", timeSendMs=" + timeSendMs +
+                ", topicDataMQTT='" + topicDataMQTT + '\'' +
+                ", topicLog1MQTT='" + topicLog1MQTT + '\'' +
+                ", topicLog2MQTT='" + topicLog2MQTT + '\'' +
+                ", topicLog3MQTT='" + topicLog3MQTT + '\'' +
+                ", topicAlarmMQTT='" + topicAlarmMQTT + '\'' +
+                ", topicFaultMQTT='" + topicFaultMQTT + '\'' +
+                ", topicAuditMQTT='" + topicAuditMQTT + '\'' +
+                ", topicLog1JsonMQTT='" + topicLog1JsonMQTT + '\'' +
+                ", topicLog2JsonMQTT='" + topicLog2JsonMQTT + '\'' +
+                ", topicLog3JsonMQTT='" + topicLog3JsonMQTT + '\'' +
+                ", topicAlarmJsonMQTT='" + topicAlarmJsonMQTT + '\'' +
+                ", topicFaultJsonMQTT='" + topicFaultJsonMQTT + '\'' +
+                ", clientIdMQTT='" + clientIdMQTT + '\'' +
+                ", userMQTT='" + userMQTT + '\'' +
+                ", passwordMQTT='" + passwordMQTT + '\'' +
+                ", isLoginMQTT=" + isLoginMQTT +
+                ", isSLLMQTT=" + isSLLMQTT +
+                ", URIWebS='" + URIWebS + '\'' +
+                ", topicLog1WebS='" + topicLog1WebS + '\'' +
+                ", topicLog2WebS='" + topicLog2WebS + '\'' +
+                ", topicLog3WebS='" + topicLog3WebS + '\'' +
+                ", topicAlarmWebS='" + topicAlarmWebS + '\'' +
+                ", topicFaultWebS='" + topicFaultWebS + '\'' +
+                ", topicAuditWebS='" + topicAuditWebS + '\'' +
+                ", topicLog1JsonWebS='" + topicLog1JsonWebS + '\'' +
+                ", topicLog2JsonWebS='" + topicLog2JsonWebS + '\'' +
+                ", topicLog3JsonWebS='" + topicLog3JsonWebS + '\'' +
+                ", topicAlarmJsonWebS='" + topicAlarmJsonWebS + '\'' +
+                ", topicFaultJsonWebS='" + topicFaultJsonWebS + '\'' +
+                ", TokenWebS='" + TokenWebS + '\'' +
+                ", userWebS='" + userWebS + '\'' +
+                ", passwordWebS='" + passwordWebS + '\'' +
+                ", isLoginWebS=" + isLoginWebS +
+                ", isSLLWebS=" + isSLLWebS +
+                ", isTokenWebS=" + isTokenWebS +
+                ", tokenApi='" + tokenApi + '\'' +
+                ", uriApi='" + uriApi + '\'' +
+                ", userApi='" + userApi + '\'' +
+                ", passwordApi='" + passwordApi + '\'' +
+                ", apiKey='" + apiKey + '\'' +
+                ", uriLog1Api='" + uriLog1Api + '\'' +
+                ", uriLog2Api='" + uriLog2Api + '\'' +
+                ", uriLog3Api='" + uriLog3Api + '\'' +
+                ", uriAlarmApi='" + uriAlarmApi + '\'' +
+                ", uriFaultApi='" + uriFaultApi + '\'' +
+                ", uriAuditApi='" + uriAuditApi + '\'' +
+                ", uriLog1JsonApi='" + uriLog1JsonApi + '\'' +
+                ", uriLog2JsonApi='" + uriLog2JsonApi + '\'' +
+                ", uriLog3JsonApi='" + uriLog3JsonApi + '\'' +
+                ", uriAlarmJsonApi='" + uriAlarmJsonApi + '\'' +
+                ", uriFaultJsonApi='" + uriFaultJsonApi + '\'' +
+                ", isLoginApi=" + isLoginApi +
+                ", isTokenApi=" + isTokenApi +
+                ", isApikey=" + isApikey +
+                ", isMQTT=" + isMQTT +
+                ", isApi=" + isApi +
+                ", isWebsocket=" + isWebsocket +
+                ", isWitsml=" + isWitsml +
+                '}';
+    }
 }

@@ -6,8 +6,11 @@ public class Main {
   public static void main(String[] args) throws Exception {
     
    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            SerialHelper.eliminarUsoSerial();
+      System.out.println("[DEBUG] Ejecutando shutdown hook");
+      SerialHelper.eliminarUsoSerial();
         }));
-   ManageData Dresser = new ManageData();
+    System.out.println("[DEBUG] Creando instancia de ManageData");
+    ManageData Dresser = new ManageData();
+    System.out.println("[DEBUG] Finalizando método main");
   }
 }

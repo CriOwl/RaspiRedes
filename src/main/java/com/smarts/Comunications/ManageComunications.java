@@ -16,25 +16,33 @@ public class ManageComunications {
     private static APIRest api;
     private static Websockets webS;
 
-    public ManageComunications(){
-        setIsMQTT(ConfigSensor.isMQTT);
-        setIsApi(ConfigSensor.isApi);
-        setIsWebsocket(ConfigSensor.isWebsocket);
-        setIsWitsml(ConfigSensor.isWitsml);
+    public static void manageComunications() {
+        System.out.println("[DEBUG] Iniciando constructor ManageComunications");
         mqtt= new Mqtt();
         api=new APIRest();
         webS= new Websockets();
+        System.out.println("[DEBUG] Constructor ManageComunications finalizado");
     }
     public static void sendData(String Json){
+        isMQTT=ConfigSensor.isMQTT;
+        isApi=ConfigSensor.isApi;
+        isWebsocket=ConfigSensor.isWebsocket;
+        isWitsml=ConfigSensor.isWitsml;
+        System.out.println("[DEBUG] Iniciando sendData con Json: " + Json);
+        System.out.println("[DEBUG] isMQTT: " + isMQTT + ", isApi: " + isApi + ", isWebsocket: " + isWebsocket + ", isWitsml: " + isWitsml);
         if(isMQTT){
+            System.out.println("[DEBUG] Enviando el Json por MQTT");
             mqtt.sendMessages(Json);
         }
         if(isApi){
+            System.out.println("[DEBUG] Enviando el Json por API");
             api.sendDataApi(Json);
         }
         if(isWebsocket){
+            System.out.println("[DEBUG] Enviando el Json por WebSocket");
             webS.sendData(Json);
         }
+        System.out.println("[DEBUG] Finalizando sendData");
         if(isWitsml){
             //generar el formato en wtisml
         }

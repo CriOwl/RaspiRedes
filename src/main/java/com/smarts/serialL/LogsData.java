@@ -65,7 +65,7 @@ public class LogsData {
     private String nameCollectionLog2="";
     private String nameCollectionLog3="";
     private String path="";
-    private String pathLogs="/var/log/.Smarts/logLogs.txt";
+    private String pathLogs="/home/EPI5/.Smarts/logLogs.txt";
     
     private String[][] meterTypeAndSize = {
         {

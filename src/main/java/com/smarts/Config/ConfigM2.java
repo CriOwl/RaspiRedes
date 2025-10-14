@@ -19,13 +19,15 @@ public class ConfigM2 {
     private static String auditCollection;
     private static String DataCollection;
     public static String idMC2="0";
-    private static String path = "/etc/.Smarts/config_MC2_"+idMC2+".txt";
-    private static String pathLogs = "/var/log/.Smarts/Config.txt";
+    private static String path = "/home/EPI5/.Smarts/config_MC2_"+idMC2+".txt";
+    private static String pathLogs = "/home/EPI5/.Smarts/logsConfig.txt";
     
     private static void writeLogs(Exception ex) {
+        System.out.println("[DEBUG] Iniciando writeLogs");
         try {
             File logMqtt = new File(pathLogs);
             if (!logMqtt.exists()) {
+                System.out.println("[DEBUG] Archivo de logs no existe, creando nuevo archivo");
                 logMqtt.getParentFile().mkdirs();
                 logMqtt.createNewFile();
             }
@@ -35,7 +37,9 @@ public class ConfigM2 {
                 ex.printStackTrace(pw);
                 pw.println("--------------------------------------------------");
             }
+            System.out.println("[DEBUG] Error escrito en logs");
         } catch (IOException e) {
+            System.out.println("[DEBUG] Error al escribir en logs");
             e.printStackTrace(); 
         }
     }
@@ -98,6 +102,7 @@ public class ConfigM2 {
         } catch (Exception e) {
             writeLogs(e);
         }
+        System.out.println(toStringConfig());
     }
     public static void updateConfigM2(){
         try {
@@ -172,6 +177,20 @@ public class ConfigM2 {
     public static void setAuditCollection(String auditCollection) {
         ConfigM2.auditCollection = auditCollection;
     }
-    
+
+     public static String toStringConfig() {
+        return "ConfigM2{" +
+                "liveDataCollection='" + liveDataCollection + '\'' +
+                ", commonCollection='" + commonCollection + '\'' +
+                ", log1Collection='" + log1Collection + '\'' +
+                ", log2Collection='" + log2Collection + '\'' +
+                ", log3Collection='" + log3Collection + '\'' +
+                ", alarmCollection='" + alarmCollection + '\'' +
+                ", faultCollection='" + faultCollection + '\'' +
+                ", auditCollection='" + auditCollection + '\'' +
+                ", DataCollection='" + DataCollection + '\'' +
+                ", idMC2='" + idMC2 + '\'' +
+                '}';
+    }
     
 }

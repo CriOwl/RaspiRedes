@@ -11,10 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import com.smarts.Comunications.DataBase.Dao;
 import com.smarts.Comunications.ManageComunications;
 import com.smarts.Comunications.Protocols.SerialHelper;
-import com.smarts.Config.ConfigM2;
 import com.smarts.Config.ConfigSensor;
 
 public class LiveData {
@@ -55,7 +53,7 @@ public class LiveData {
     private Integer HighestDailyVolumenCurrentMonth;
     private Integer HighestDailyVolumenPreviousMonth;
     private String path="";
-    private final String pathLogs="/var/log/.Smarts/logLiveData.txt";
+    private final String pathLogs="/home/EPI5/.Smarts/logLiveData.txt";
     
     public LiveData() {
 
@@ -83,12 +81,13 @@ public class LiveData {
         readDataCalibration(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x75), 30));
         // readAccumulatedVolumen(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte)0x2A),
         // 40));
+        ManageComunications.sendData(toJson());
         if (id != 0
         && !(correctedResidual + zeroPressure + uncorrectedResidual + spanTemp + temperature + pressure == 0)) {
-            ManageComunications.sendData(toJson());
-            Dao.collectionLiveData(toJson(),ConfigM2.getLiveDataCollection(),getSerialRaspi());
-            ConfigM2.setDataCollection(Dao.addJsonCollection(toJson(),ConfigM2.getDataCollection(),id.toString(),"DataCollection"));
-            ConfigM2.updateConfigM2();
+            //Dao.collectionLiveData(toJson(),ConfigM2.getLiveDataCollection(),getSerialRaspi());
+            //ConfigM2.setDataCollection(Dao.addJsonCollection(toJson(),ConfigM2.getDataCollection(),id.toString(),"DataCollection"));
+            //Dao.addJsonCollection(toJson(),"data",id.toString(),"DataCollection");
+            //ConfigM2.updateConfigM2();
         }
     }
     

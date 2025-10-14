@@ -37,13 +37,38 @@ public class Websockets {
     private  String uriAlarmJson;
     private  String uriFaultJson;
     private  String token;
-    private final String pathLogs = "/var/log/.Smarts/logWebS.txt";
+    private final String pathLogs = "/home/EPI5/.Smarts/logWebS.txt";
     private  boolean isLogin;
     private  boolean isSLL;
     private  boolean isToken;
     private final String delimeter = ",";
-     public Websockets() {
+    public Websockets() {
+        System.out.println("[DEBUG] Iniciando constructor Websockets");
         setConfiguration();
+        System.out.println(toStringConfig());
+        System.out.println("[DEBUG] Constructor Websockets finalizado");
+    }
+    public String toStringConfig() {
+        return "Websockets{" +
+                "uri='" + uri + '\'' +
+                ", user='" + user + '\'' +
+                ", password='" + password + '\'' +
+                ", uriLog1='" + uriLog1 + '\'' +
+                ", uriLog2='" + uriLog2 + '\'' +
+                ", uriLog3='" + uriLog3 + '\'' +
+                ", uriAlarm='" + uriAlarm + '\'' +
+                ", uriAudit='" + uriAudit + '\'' +
+                ", uriFault='" + uriFault + '\'' +
+                ", uriLog1Json='" + uriLog1Json + '\'' +
+                ", uriLog2Json='" + uriLog2Json + '\'' +
+                ", uriLog3Json='" + uriLog3Json + '\'' +
+                ", uriAlarmJson='" + uriAlarmJson + '\'' +
+                ", uriFaultJson='" + uriFaultJson + '\'' +
+                ", token='" + token + '\'' +
+                ", isLogin=" + isLogin +
+                ", isSLL=" + isSLL +
+                ", isToken=" + isToken +
+                '}';
     }
     private void writeLogs(Exception ex) {
         try {
@@ -63,6 +88,7 @@ public class Websockets {
         }
     }
     private void sendJson(String json,String uriL) {
+        setConfiguration();
         try {
             String fullUri = (isSLL) ? "wss://" + uriL : "ws://" + uriL;
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -148,6 +174,7 @@ public class Websockets {
     }
     
     private void sendFile(String path, String uriL) {
+        setConfiguration();
         try {
             String fullUri = (isSLL) ? "wss://" + uriL : "ws://" + uriL;
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -231,6 +258,7 @@ public class Websockets {
         } catch (Exception e) {
             writeLogs(e);
         }
+        System.out.println(toStringConfig());
     }
     public String getURI() {
         return uri;

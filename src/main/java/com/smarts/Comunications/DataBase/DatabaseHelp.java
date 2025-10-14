@@ -14,17 +14,22 @@ public abstract class DatabaseHelp {
     private static MongoDatabase database;
 
     public static MongoDatabase getConnection() {
+        System.out.println("[DEBUG] Obteniendo conexión a la base de datos");
         if (mongoClient == null) {
+            System.out.println("[DEBUG] Creando nuevo cliente MongoDB");
             mongoClient = MongoClients.create(Bd_Path);
             database = mongoClient.getDatabase(Bd_Base);
         }
+        System.out.println("[DEBUG] Conexión obtenida");
         return database;
     }
     public static void closeConnection() {
+        System.out.println("[DEBUG] Cerrando conexión a la base de datos");
         if (mongoClient != null) {
             mongoClient.close();
             mongoClient = null;
             database = null;
+            System.out.println("[DEBUG] Conexión cerrada");
         }
     }
 }

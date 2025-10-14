@@ -15,24 +15,29 @@ import com.mongodb.client.MongoDatabase;
 
 public class Dao {
     public static String addJsonCollection(String Json, String nameCollection, String id,String type){
+        System.out.println("[DEBUG] Iniciando addJsonCollection"+" con colección: " + nameCollection+"con id: " + id+" y tipo: " + type);
         MongoDatabase database= DatabaseHelp.getConnection();
         MongoCollection<Document> collection=database.getCollection(nameCollection);
         if(collection==null){
+            System.out.println("[DEBUG] Colección no existe, creando nueva colección: " + nameCollection);
             database.createCollection(nameCollection);
-            
         }else{ 
             long totalDocuments= collection.estimatedDocumentCount();
+            System.out.println("[DEBUG] Total documentos en colección: " + totalDocuments);
             if(totalDocuments>1440){
                 DateTimeFormatter dtfActually = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDateTime nowActually = LocalDateTime.now();
                 String nowDate = dtfActually.format(LocalDateTime.now()).toString();
                 nameCollection=type+"_"+id+"_"+nowDate;
+                System.out.println("[DEBUG] Cambiando nombre de colección por límite: " + nameCollection);
             }
         }
         collection= database.getCollection(nameCollection);
         Document jsonValue=Document.parse(Json);
         collection.insertOne(jsonValue);
+        System.out.println("[DEBUG] Documento insertado en colección: " + nameCollection);
         DatabaseHelp.closeConnection();
+        System.out.println("[DEBUG] Conexión a base de datos cerrada");
         return nameCollection;
     }
     public static String date(String id){
@@ -45,6 +50,7 @@ public class Dao {
         return nameCollection;
     }
     public static void dropCollection(String nameCollection){
+        System.out.println("[DEBUG] Iniciando dropCollection para colección: " + nameCollection);
         MongoDatabase database= DatabaseHelp.getConnection();
         MongoCollection<Document> collection=database.getCollection(nameCollection);
         if(collection==null){
@@ -55,6 +61,7 @@ public class Dao {
         DatabaseHelp.closeConnection();
     }
     public static String generateCSV(String nameCollection, String path){
+        System.out.println("[DEBUG] Iniciando generateCSV para colección: " + nameCollection + " en ruta: " + path);
         MongoDatabase database= DatabaseHelp.getConnection();
         MongoCollection<Document> collection=database.getCollection(nameCollection);
         if(collection==null){
@@ -95,6 +102,7 @@ public class Dao {
     }
     
     public static String collectionLiveData(String Json, String nameCollection, String id){
+        System.out.println("[DEBUG] Iniciando collectionLiveData con colección: " + nameCollection+" con id: " + id);
         MongoDatabase database= DatabaseHelp.getConnection();
         database.drop(); 
         MongoCollection<Document> collection=database.getCollection(nameCollection);
