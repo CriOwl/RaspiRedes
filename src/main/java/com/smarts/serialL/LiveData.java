@@ -127,7 +127,6 @@ public class LiveData {
             id = ByteBuffer.wrap(Arrays.copyOfRange(readBuffer, 10, 14))
             .order(ByteOrder.LITTLE_ENDIAN).getInt();  
         }
-        id=12345678;
         System.out.println(id);
         return id.toString();
     }
@@ -228,7 +227,7 @@ public class LiveData {
         Json = "{" 
         + '"' + "Data_Input_Name"+'"'+":"+"{"+
         //+ '"'+ "Id" + '"' + ": " + getSerialRaspi() + ","
-        + '"' + "DeviceUID" + '"' + ": " + id + ","
+        + '"' + "DeviceUID" + '"' + ": " + 12345678 + ","
         + '"' + "CorrectedVolume" + '"' + ": " + getCorrectedVolumen() + ","
         + '"' + "UncorrectedVolume" + '"' + ": " + getUncorrectedVolumen() + ","
         + '"' + "CorrectedResidual" + '"' + ": " + getCorrectedResidualString() + ","
@@ -270,7 +269,7 @@ public class LiveData {
             Json = "{" 
         //+ '"'+ "Id" + '"' + ": " + getSerialRaspi() + ","
         + '"' + "Data_Input_Name"+'"'+":"+"{"+
-        + '"' + "DeviceUID" + '"' + ": " + id + ","
+        + '"' + "DeviceUID" + '"' + ": " + 12345678 + ","
         + '"' + "CorrectedVolume" + '"' + ": " + getCorrectedVolumen() + ","
         + '"' + "UncorrectedVolume" + '"' + ": " + getUncorrectedVolumen() + ","
         + '"' + "CorrectedResidual" + '"' + ": " + getCorrectedResidualString() + ","
