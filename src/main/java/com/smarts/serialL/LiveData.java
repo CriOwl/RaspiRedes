@@ -77,7 +77,7 @@ public class LiveData {
     }
     public void liveDataRequest() {
         serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E), 14));
-        readDataLive(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6C), 70));
+        readDataLive(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6C), 76));
         readDataCalibration(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x75), 30));
         // readAccumulatedVolumen(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte)0x2A),
         // 40));
@@ -100,6 +100,10 @@ public class LiveData {
     
     public String serialData(byte[] readBuffer) {
         id = 0;
+        if(readBuffer==null || readBuffer.length<6){
+            System.out.println("Error: El buffer de lectura es nulo o demasiado corto.");
+            return "0";
+        }
         id = ByteBuffer.wrap(Arrays.copyOfRange(readBuffer, readBuffer.length - 6, readBuffer.length - 2))
         .order(ByteOrder.LITTLE_ENDIAN).getInt();
         System.out.println(id);
@@ -131,6 +135,7 @@ public class LiveData {
         setRawpressure(Arrays.copyOfRange(readBufferLive, 44, 48));
         setCorrectionFactor(Arrays.copyOfRange(readBufferLive, 48, 52));
         setzFactor(Arrays.copyOfRange(readBufferLive, 52, 56));
+        
     }
     
     @Override
