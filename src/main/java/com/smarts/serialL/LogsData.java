@@ -169,7 +169,7 @@ public class LogsData {
         }
         
         private String getId() {
-            serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E), 14));
+            serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E,ManageData.version), 14));
             return id.toString() + ";";
         }
         
@@ -239,7 +239,7 @@ public class LogsData {
         }
         
         private void maxBuffer() {
-            byte[] salida = ((SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x44), 16)));
+            byte[] salida = ((SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x44,ManageData.version), 16)));
             for (byte b : salida) {
                 System.out.printf("%02X ", b);
             }
@@ -631,11 +631,11 @@ public class LogsData {
         }
         
         public void readLogginSettings() {
-            byte[] logginSettings = SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x69), 90);
+            byte[] logginSettings = SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x69,ManageData.version), 90);
             for (byte b : logginSettings) {
                 System.out.printf("%02X ", b);
             }
-            byte[] logginSettings2 = SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x2D), 90);
+            byte[] logginSettings2 = SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x2D,ManageData.version), 90);
             for (byte b : logginSettings2) {
                 System.out.printf("%02X ", b);
             }
@@ -1599,7 +1599,7 @@ public class LogsData {
         
         private void setBaudRate() {
             byte[] respuesta = SerialHelper
-            .stablishConnection(SerialHelper.createDataRequestPacketData((byte) 0x42, (byte) 0x03), 14);
+            .stablishConnection(SerialHelper.createDataRequestPacketData((byte) 0x42, (byte) 0x03,ManageData.version), 14);
             for (byte b : respuesta) {
                 System.out.printf("%02X ", b);
             }

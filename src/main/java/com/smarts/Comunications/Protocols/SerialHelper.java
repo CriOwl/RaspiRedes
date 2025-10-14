@@ -212,29 +212,49 @@ public  class SerialHelper {
     return sb.toString().trim();
 }
 
-    public static byte[] createDataRequestPacket(byte type) {
-        byte[] packet = new byte[14];
-        packet[0] = 0x00;
-        packet[1] = 0x00;
-        packet[2] = 0x00;
-        packet[3] = 0x00;
-        packet[4] = type;
-        packet[5] = 0x00;
-        packet[6] = 0x00;
-        packet[7] = 0x00;
-        packet[8] = 0x00;
-        packet[9] = 0x00;
-        packet[10] = 0x01;
-        packet[11] = 0x00;
-        byte[] nChecksum = packet;
-        int checksum = calculateChecksum(nChecksum, nChecksum.length - 2);
-        System.out.println("CRC Calculado: " + Integer.toHexString(checksum));
-        packet[12] = (byte) (checksum & 0xFF);
-        packet[13] = (byte) ((checksum >> 8) & 0xFF);
+    public static byte[] createDataRequestPacket(byte type, int version) {
+        byte[] packet;
+        if(version==0){
+            packet = new byte[11];
+            packet[0] = 0x00;
+            packet[1] = 0x00;
+            packet[2] = 0x00;
+            packet[3] = 0x00;
+            packet[4] = type;
+            packet[5] = 0x00;
+            packet[6] = 0x00;
+            packet[7] = 0x01;
+            packet[8] = 0x00;
+            byte[] nChecksum = packet;
+            int checksum = calculateChecksum(nChecksum, nChecksum.length - 2);
+            System.out.println("CRC Calculado: " + Integer.toHexString(checksum));
+            packet[9] = (byte) (checksum & 0xFF);
+            packet[10] = (byte) ((checksum >> 8) & 0xFF);
+        }else{
+            packet = new byte[13];
+            packet[0] = 0x00;
+            packet[1] = 0x00;
+            packet[2] = 0x00;
+            packet[3] = 0x00;
+            packet[4] = type;
+            packet[5] = 0x00;
+            packet[6] = 0x00;
+            packet[7] = 0x00;
+            packet[8] = 0x00;
+            packet[9] = 0x01;
+            packet[10] = 0x00;
+            byte[] nChecksum = packet;
+            int checksum = calculateChecksum(nChecksum, nChecksum.length - 2);
+            System.out.println("CRC Calculado: " + Integer.toHexString(checksum));
+            packet[11] = (byte) (checksum & 0xFF);
+            packet[12] = (byte) ((checksum >> 8) & 0xFF);
+        }
         return packet;
     }
-    public static byte[] createDataRequestPacketData(byte type,byte data) {
-        byte[] packet = new byte[11];
+    public static byte[] createDataRequestPacketData(byte type,byte data, int version) {
+        byte[] packet;
+        if(version==0){
+        packet = new byte[11];
         packet[0] = 0x00;
         packet[1] = 0x00;
         packet[2] = 0x00;
@@ -249,6 +269,25 @@ public  class SerialHelper {
         System.out.println("CRC Calculado: " + Integer.toHexString(checksum));
         packet[9] = (byte) (checksum & 0xFF);
         packet[10] = (byte) ((checksum >> 8) & 0xFF);
+        }else{
+            packet = new byte[13];
+            packet[0] = 0x00;
+            packet[1] = 0x00;
+            packet[2] = 0x00;
+            packet[3] = 0x00;
+            packet[4] = type;
+            packet[5] = 0x00;
+            packet[6] = 0x00;
+            packet[7] = 0x00;
+            packet[8] = 0x00;
+            packet[9] = 0x01;
+            packet[10] = data;
+            byte[] nChecksum = packet;
+            int checksum = calculateChecksum(nChecksum, nChecksum.length - 2);
+            System.out.println("CRC Calculado: " + Integer.toHexString(checksum));
+            packet[11] = (byte) (checksum & 0xFF);
+            packet[12] = (byte) ((checksum >> 8) & 0xFF);
+        }
         return packet;
     }
     public static byte[] createDataRequestPacketAddress(byte type,byte starAddress,byte starAddress2,byte dataLong) {
