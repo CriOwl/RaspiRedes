@@ -11,12 +11,14 @@ import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import java.util.*;
 
 import com.smarts.Config.ConfigSensor;
 
 public class Mqtt {
     private String clientID;
     private String broker;
+    private List<String> brokersList = new ArrayList<>();
     private String topicL1;
     private String topicL2;
     private String topicL3;
@@ -36,8 +38,7 @@ public class Mqtt {
     private boolean isSLL;
     private final String delimeter = ",";
     
-    // 🔹 Cliente persistente MQTT
-    private IMqttClient client;
+    private final Map<String, IMqttClient> clients = new HashMap<>();
 
     public Mqtt() {
         System.out.println("[DEBUG] Iniciando constructor Mqtt");
@@ -87,27 +88,43 @@ public class Mqtt {
         }
     }
 
-    // 🔹 Nuevo método para mantener conexión persistente
     private void ensureConnection() throws Exception {
-        if (client != null && client.isConnected()) {
-            return; // ya conectado
+        if ((brokersList == null || brokersList.isEmpty())) {
+            if (broker != null && !broker.isBlank()) {
+                brokersList = new ArrayList<>();
+                brokersList.add(broker);
+            }
+        }
+        if (brokersList == null || brokersList.isEmpty()) {
+            throw new IllegalStateException("No hay brokers configurados para MQTT");
         }
 
-        String brokerClient = (isSLL) ? "ssl://" : "tcp://";
-        brokerClient += broker;
-        System.out.println("[INFO] Conectando a broker: " + brokerClient + " con clientID: " + clientID);
+        for (String b : brokersList) {
+            String trimmed = b == null ? "" : b.trim();
+            if (trimmed.isEmpty()) continue;
 
-        client = new MqttClient(brokerClient, clientID);
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setCleanSession(false); // mantener sesión activa
+            IMqttClient c = clients.get(trimmed);
+            if (c != null && c.isConnected()) {
+                continue; // ya conectado a este broker
+            }
 
-        if (isLogin) {
-            options.setUserName(user);
-            options.setPassword(password.toCharArray());
+            String brokerClient = (isSLL) ? "ssl://" : "tcp://";
+            brokerClient += trimmed;
+            System.out.println("[INFO] Conectando a broker: " + brokerClient + " con clientID: " + clientID);
+
+            IMqttClient newClient = new MqttClient(brokerClient, clientID);
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setCleanSession(false); // mantener sesión activa
+
+            if (isLogin) {
+                options.setUserName(user);
+                options.setPassword(password.toCharArray());
+            }
+
+            newClient.connect(options);
+            clients.put(trimmed, newClient);
+            System.out.println("[INFO] Conexión MQTT establecida con éxito a: " + trimmed);
         }
-
-        client.connect(options);
-        System.out.println("[INFO] Conexión MQTT establecida con éxito.");
     }
 
     private void openConnect(String json, String topicL) {
@@ -115,16 +132,23 @@ public class Mqtt {
         try {
             ensureConnection();
             String topicResponse = topicL + "/response";
-            if (!client.isConnected()) return;
-            client.subscribe(topicResponse, (topic, message) -> {
-                String response = new String(message.getPayload());
-                System.out.println("Respuesta recibida: " + response);
-            });
-            MqttMessage message = new MqttMessage(json.getBytes());
-            message.setQos(1);
-            client.publish(topicL, message);
-            System.out.println("[INFO] Mensaje enviado al topic: " + topicL);
-
+            for (Map.Entry<String, IMqttClient> entry : clients.entrySet()) {
+                IMqttClient c = entry.getValue();
+                if (c == null || !c.isConnected()) continue;
+                try {
+                    c.subscribe(topicResponse, (topic, message) -> {
+                        try {
+                            String response = new String(message.getPayload());
+                            System.out.println("[" + entry.getKey() + "] Respuesta recibida: " + response);
+                        } catch (Exception ignore) {}
+                    });
+                } catch (Exception subEx) {
+                }
+                MqttMessage message = new MqttMessage(json.getBytes());
+                message.setQos(1);
+                c.publish(topicL, message);
+                System.out.println("[INFO] Mensaje enviado al topic: " + topicL + " via " + entry.getKey());
+            }
         } catch (Exception e) {
             writeLogs(e);
         }
@@ -188,30 +212,34 @@ public class Mqtt {
             long totalSize = document.length();
             int totalChunks = (int) Math.ceil((double) totalSize / chunkSize);
 
-            try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(document))) {
-                int bytesRead;
-                int index = 0;
-                byte[] buffer = new byte[chunkSize];
-                while ((bytesRead = bis.read(buffer)) != -1) {
-                    index++;
-                    byte[] chunk = new byte[bytesRead];
-                    System.arraycopy(buffer, 0, chunk, 0, bytesRead);
-                    String header = index + "/" + totalChunks + "|";
-                    byte[] headerBytes = header.getBytes();
-                    byte[] payload = new byte[headerBytes.length + chunk.length];
-                    System.arraycopy(headerBytes, 0, payload, 0, headerBytes.length);
-                    System.arraycopy(chunk, 0, payload, headerBytes.length, chunk.length);
-                    MqttMessage message = new MqttMessage(payload);
-                    message.setQos(1);
-                    client.publish(topicS, message);
-                    System.out.println("Fragmento " + index + "/" + totalChunks + " enviado (" + bytesRead + " bytes)");
+            for (Map.Entry<String, IMqttClient> entry : clients.entrySet()) {
+                IMqttClient c = entry.getValue();
+                if (c == null || !c.isConnected()) continue;
+                System.out.println("[INFO] Enviando a broker: " + entry.getKey());
+                try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(document))) {
+                    int bytesRead;
+                    int index = 0;
+                    byte[] buffer = new byte[chunkSize];
+                    while ((bytesRead = bis.read(buffer)) != -1) {
+                        index++;
+                        byte[] chunk = new byte[bytesRead];
+                        System.arraycopy(buffer, 0, chunk, 0, bytesRead);
+                        String header = index + "/" + totalChunks + "|";
+                        byte[] headerBytes = header.getBytes();
+                        byte[] payload = new byte[headerBytes.length + chunk.length];
+                        System.arraycopy(headerBytes, 0, payload, 0, headerBytes.length);
+                        System.arraycopy(chunk, 0, payload, headerBytes.length, chunk.length);
+                        MqttMessage message = new MqttMessage(payload);
+                        message.setQos(1);
+                        c.publish(topicS, message);
+                        System.out.println("[" + entry.getKey() + "] Fragmento " + index + "/" + totalChunks + " enviado (" + bytesRead + " bytes)");
+                    }
                 }
+                MqttMessage eof = new MqttMessage("EOF".getBytes());
+                eof.setQos(1);
+                c.publish(topicS, eof);
+                System.out.println("[" + entry.getKey() + "] Envío completo de archivo: " + document.getName());
             }
-
-            MqttMessage eof = new MqttMessage("EOF".getBytes());
-            eof.setQos(1);
-            client.publish(topicS, eof);
-            System.out.println("Envío completo de archivo: " + document.getName());
 
         } catch (Exception e) {
             writeLogs(e);
@@ -250,6 +278,15 @@ public class Mqtt {
 
     private void setBroker(String broker) {
         this.broker = (broker == null || broker.isBlank()) ? "" : broker;
+        this.brokersList = new ArrayList<>();
+        if (this.broker != null && !this.broker.isBlank()) {
+            String[] parts = this.broker.split(",");
+            for (String p : parts) {
+                if (p != null && !p.trim().isEmpty()) {
+                    this.brokersList.add(p.trim());
+                }
+            }
+        }
     }
 
     private void setTopic(String topic) {
