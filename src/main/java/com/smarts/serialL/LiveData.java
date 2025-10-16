@@ -225,9 +225,8 @@ public class LiveData {
         String Json;
         if (ManageData.version==0){
         Json = "{" 
-        + '"' + "Data_Input_Name"+'"'+":"+"{"+
         //+ '"'+ "Id" + '"' + ": " + getSerialRaspi() + ","
-        + '"' + "DeviceUID" + '"' + ": " + 12345678 + ","
+        + '"' + "DeviceUID" + '"' + ": "+'"'+ "12345678"+'"' + ","
         + '"' + "CorrectedVolume" + '"' + ": " + getCorrectedVolumen() + ","
         + '"' + "UncorrectedVolume" + '"' + ": " + getUncorrectedVolumen() + ","
         + '"' + "CorrectedResidual" + '"' + ": " + getCorrectedResidualString() + ","
@@ -264,12 +263,11 @@ public class LiveData {
         * + '"' + "Highest Daily Volumen Previous Month" + '"' + ": " +
         * getHighestDailyVolumenPreviousMonth() + ","
         */ 
-        + "}}";
+        + "}";
         }else{
             Json = "{" 
         //+ '"'+ "Id" + '"' + ": " + getSerialRaspi() + ","
-        + '"' + "Data_Input_Name"+'"'+":"+"{"+
-        + '"' + "DeviceUID" + '"' + ": " + 12345678 + ","
+        + '"' + "DeviceUID" + '"' + ": " +'"'+ "12345678"+'"' + ","
         + '"' + "CorrectedVolume" + '"' + ": " + getCorrectedVolumen() + ","
         + '"' + "UncorrectedVolume" + '"' + ": " + getUncorrectedVolumen() + ","
         + '"' + "CorrectedResidual" + '"' + ": " + getCorrectedResidualString() + ","
@@ -306,7 +304,7 @@ public class LiveData {
         * + '"' + "Highest Daily Volumen Previous Month" + '"' + ": " +
         * getHighestDailyVolumenPreviousMonth() + ","
         */ 
-        + "}"+"}";
+        +"}";
         }
         System.out.println(Json);
         return Json;
