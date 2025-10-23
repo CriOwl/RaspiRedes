@@ -42,9 +42,11 @@ public class APIRest {
     private  boolean isLogin;
     private  boolean isToken;
     private  boolean isApiKey;
+    private  int index=0;
     private final String pathLogs = "/home/EPI5/.Smarts/logApiRest.txt";
-    public APIRest() {
+    public APIRest(int index) {
         System.out.println("[DEBUG] Iniciando constructor APIRest");
+        this.index=index;
         setConfiguration();
         System.out.println("[DEBUG] Constructor APIRest finalizado");
     }
@@ -67,25 +69,25 @@ public class APIRest {
     }
     private void setConfiguration() {
         try {
-                setUri(ConfigSensor.uriApi);
-                setToken(ConfigSensor.tokenApi);
-                setUser(ConfigSensor.userApi);
-                setPassword(ConfigSensor.passwordApi);
-                setUriLog1(ConfigSensor.uriLog1Api);
-                setUriLog2(ConfigSensor.uriLog2Api);
-                setUriLog3(ConfigSensor.uriLog3Api);
-                setUriALarm(ConfigSensor.uriAlarmApi);
-                setUriFault(ConfigSensor.uriFaultApi);
-                setUriAudit(ConfigSensor.uriAuditApi);
-                setUriALarmJson(ConfigSensor.uriAlarmJsonApi);
-                setUriFaultJson(ConfigSensor.uriFaultJsonApi);
-                setUriLog1Json(ConfigSensor.uriLog1JsonApi);
-                setUriLog2Json(ConfigSensor.uriLog2JsonApi);
-                setUriLog3Json(ConfigSensor.uriLog3JsonApi);
-                setApiKey(ConfigSensor.apiKey);
-                setIsApiKey(ConfigSensor.isApikey);
-                setToken(ConfigSensor.isTokenApi);
-                setIsLogin(ConfigSensor.isLoginApi);            
+                setUri(ConfigSensor.uriApi[index]);
+                setToken(ConfigSensor.tokenApi[index]);
+                setUser(ConfigSensor.userApi[index]);
+                setPassword(ConfigSensor.passwordApi[index]);
+                setUriLog1(ConfigSensor.uriLog1Api[index]);
+                setUriLog2(ConfigSensor.uriLog2Api[index]);
+                setUriLog3(ConfigSensor.uriLog3Api[index]);
+                setUriALarm(ConfigSensor.uriAlarmApi[index]);
+                setUriFault(ConfigSensor.uriFaultApi[index]);
+                setUriAudit(ConfigSensor.uriAuditApi[index]);
+                setUriALarmJson(ConfigSensor.uriAlarmJsonApi[index]);
+                setUriFaultJson(ConfigSensor.uriFaultJsonApi[index]);
+                setUriLog1Json(ConfigSensor.uriLog1JsonApi[index]);
+                setUriLog2Json(ConfigSensor.uriLog2JsonApi[index]);
+                setUriLog3Json(ConfigSensor.uriLog3JsonApi[index]);
+                setApiKey(ConfigSensor.apiKey[index]);
+                setIsApiKey(ConfigSensor.isApikey[index]);
+                setToken(ConfigSensor.isTokenApi[index]);
+                setIsLogin(ConfigSensor.isLoginApi[index]);            
         } catch (Exception e) {
             writeLogs(e);
         }

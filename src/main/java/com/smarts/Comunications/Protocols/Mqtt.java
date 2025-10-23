@@ -35,12 +35,14 @@ public class Mqtt {
     private boolean isLogin;
     private boolean isSLL;
     private final String delimeter = ",";
+    private int index=0;
     
     // 🔹 Cliente persistente MQTT
     private IMqttClient client;
 
-    public Mqtt() {
+    public Mqtt(int index) {
         System.out.println("[DEBUG] Iniciando constructor Mqtt");
+        this.index=index;
         setConfiguration();
         System.out.println(toStringConfig());
         System.out.println("[DEBUG] Constructor Mqtt finalizado");
@@ -220,24 +222,24 @@ public class Mqtt {
 
     private void setConfiguration() {
         try {
-            setClientID(ConfigSensor.clientIdMQTT);
-            setBroker(ConfigSensor.brokerMQTT);
-            setTopic(ConfigSensor.topicDataMQTT);
-            setUser(ConfigSensor.userMQTT);
-            setTopicL1(ConfigSensor.topicLog1MQTT);
-            setTopicL2(ConfigSensor.topicLog2MQTT);
-            setTopicL3(ConfigSensor.topicLog3MQTT);
-            setTopicAlarm(ConfigSensor.topicAlarmMQTT);
-            setTopicAudit(ConfigSensor.topicAuditMQTT);
-            setTopicFault(ConfigSensor.topicFaultMQTT);
-            setTopicAlarmJson(ConfigSensor.topicAlarmJsonMQTT);
-            setTopicFaultJson(ConfigSensor.topicFaultJsonMQTT);
-            setTopicJsonL1(ConfigSensor.topicLog1JsonMQTT);
-            setTopicJsonL2(ConfigSensor.topicLog2JsonMQTT);
-            setTopicJsonL3(ConfigSensor.topicLog3JsonMQTT);
-            setPassword(ConfigSensor.passwordMQTT);
-            setSLL(ConfigSensor.isSLLMQTT);
-            setLogin(ConfigSensor.isLoginMQTT);
+            setClientID(ConfigSensor.clientIdMQTT[index]);
+            setBroker(ConfigSensor.brokerMQTT[index]);
+            setTopic(ConfigSensor.topicDataMQTT[index]);
+            setUser(ConfigSensor.userMQTT[index]);
+            setTopicL1(ConfigSensor.topicLog1MQTT[index]);
+            setTopicL2(ConfigSensor.topicLog2MQTT[index]);
+            setTopicL3(ConfigSensor.topicLog3MQTT[index]);
+            setTopicAlarm(ConfigSensor.topicAlarmMQTT[index]);
+            setTopicAudit(ConfigSensor.topicAuditMQTT[index]);
+            setTopicFault(ConfigSensor.topicFaultMQTT[index]);
+            setTopicAlarmJson(ConfigSensor.topicAlarmJsonMQTT[index]);
+            setTopicFaultJson(ConfigSensor.topicFaultJsonMQTT[index]);
+            setTopicJsonL1(ConfigSensor.topicLog1JsonMQTT[index]);
+            setTopicJsonL2(ConfigSensor.topicLog2JsonMQTT[index]);
+            setTopicJsonL3(ConfigSensor.topicLog3JsonMQTT[index]);
+            setPassword(ConfigSensor.passwordMQTT[index]);
+            setSLL(ConfigSensor.isSLLMQTT[index]);
+            setLogin(ConfigSensor.isLoginMQTT[index]);
         } catch (Exception e) {
             writeLogs(e);
         }

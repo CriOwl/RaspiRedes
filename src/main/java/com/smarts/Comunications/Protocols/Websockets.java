@@ -42,8 +42,10 @@ public class Websockets {
     private  boolean isSLL;
     private  boolean isToken;
     private final String delimeter = ",";
-    public Websockets() {
+    private int index=0;
+    public Websockets(int index) {
         System.out.println("[DEBUG] Iniciando constructor Websockets");
+        this.index=index;
         setConfiguration();
         System.out.println(toStringConfig());
         System.out.println("[DEBUG] Constructor Websockets finalizado");
@@ -236,24 +238,24 @@ public class Websockets {
     
     private void setConfiguration() {
         try {
-                seturi(ConfigSensor.URIWebS);
-                setUser(ConfigSensor.userWebS);
-                setPassword(ConfigSensor.passwordWebS);
-                setToken(ConfigSensor.TokenWebS);
-                setSLL(ConfigSensor.isSLLWebS);
-                setLogin(ConfigSensor.isLoginWebS);
-                setToken(ConfigSensor.isTokenWebS);
-                setUriLog1(ConfigSensor.topicLog1WebS);
-                setUriLog2(ConfigSensor.topicLog2WebS);
-                setUriLog3(ConfigSensor.topicLog3WebS);
-                setUriFault(ConfigSensor.topicFaultWebS);
-                setUriAlarm(ConfigSensor.topicAlarmWebS);
-                setUriAudit(ConfigSensor.topicAuditWebS);
-                setUriFaultJson(ConfigSensor.topicFaultJsonWebS);
-                setUriAlarmJson(ConfigSensor.topicAlarmJsonWebS);
-                setUriLog1Json(ConfigSensor.topicLog1JsonWebS);
-                setUriLog2Json(ConfigSensor.topicLog2JsonWebS);
-                setUriLog3Json(ConfigSensor.topicLog3JsonWebS);
+                seturi(ConfigSensor.URIWebS[index]);
+                setUser(ConfigSensor.userWebS[index]);
+                setPassword(ConfigSensor.passwordWebS[index]);
+                setToken(ConfigSensor.TokenWebS[index]);
+                setSLL(ConfigSensor.isSLLWebS[index]);
+                setLogin(ConfigSensor.isLoginWebS[index]);
+                setToken(ConfigSensor.isTokenWebS[index]);
+                setUriLog1(ConfigSensor.topicLog1WebS[index]);
+                setUriLog2(ConfigSensor.topicLog2WebS[index]);
+                setUriLog3(ConfigSensor.topicLog3WebS[index]);
+                setUriFault(ConfigSensor.topicFaultWebS[index]);
+                setUriAlarm(ConfigSensor.topicAlarmWebS[index]);
+                setUriAudit(ConfigSensor.topicAuditWebS[index]);
+                setUriFaultJson(ConfigSensor.topicFaultJsonWebS[index]);
+                setUriAlarmJson(ConfigSensor.topicAlarmJsonWebS[index]);
+                setUriLog1Json(ConfigSensor.topicLog1JsonWebS[index]);
+                setUriLog2Json(ConfigSensor.topicLog2JsonWebS[index]);
+                setUriLog3Json(ConfigSensor.topicLog3JsonWebS[index]);
 
         } catch (Exception e) {
             writeLogs(e);
