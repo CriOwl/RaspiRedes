@@ -18,16 +18,17 @@ public class ManageComunications {
     
     public static void manageComunications() {
         System.out.println("[DEBUG] Iniciando constructor ManageComunications");
+        setComunications();
         System.out.println("[DEBUG] Constructor ManageComunications finalizado");
     }
-    private void setComunications(){
+    private static void setComunications(){
         for (int i =0;i<ConfigSensor.brokerMQTT.length;i++) {
             mqtt[i]= new Mqtt(i);
         }
-        for (int i =0;i<ConfigSensor.brokerMQTT.length;i++) {
+        for (int i =0;i<ConfigSensor.uriApi.length;i++) {
             api[i]= new APIRest(i);
         }
-        for (int i =0;i<ConfigSensor.brokerMQTT.length;i++) {
+        for (int i =0;i<ConfigSensor.URIWebS.length;i++) {
             webS[i]= new Websockets(i);
         }
     }
