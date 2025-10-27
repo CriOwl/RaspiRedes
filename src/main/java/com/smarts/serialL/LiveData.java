@@ -17,7 +17,7 @@ import com.smarts.Config.ConfigM2;
 import com.smarts.Config.ConfigSensor;
 
 public class LiveData {
-    private Integer id;
+    private Long  id;
     private Integer correctedVolumen;
     private Integer uncorrectedVolumen;
     private Float correctedResidual;
@@ -103,32 +103,48 @@ public class LiveData {
     }
     
     private void readDataCalibration(byte[] readData) {
+        if(readData==null || readData.length<20){
+            System.out.println("Error: El buffer de lectura es demasiado corto para Data Calibration V1.");
+            return;
+        }
         setZeroTemp(Arrays.copyOfRange(readData, 8, 12));
         setSpanTemp(Arrays.copyOfRange(readData, 12, 16));
         setZeroPressure(Arrays.copyOfRange(readData, 16, 20));
         setSpanPressure(Arrays.copyOfRange(readData, 20, 24));
     }
     private void readDataCalibrationV2(byte[] readData) {
+        if(readData==null || readData.length<20){
+            System.out.println("Error: El buffer de lectura es demasiado corto para Data Calibration V1.");
+            return;
+        }
         setZeroTemp(Arrays.copyOfRange(readData, 10, 14));
         setSpanTemp(Arrays.copyOfRange(readData, 14, 18));
         setZeroPressure(Arrays.copyOfRange(readData, 18, 22));
         setSpanPressure(Arrays.copyOfRange(readData, 22, 26));
     }
     public String serialData(byte[] readBuffer) {
-        id = 0;
-        if(readBuffer==null || readBuffer.length<6){
+        id = 0L;
+        if (readBuffer == null || readBuffer.length < 6) {
             System.out.println("Error: El buffer de lectura es nulo o demasiado corto.");
             return "0";
         }
-        if(ManageData.version==0){
-            id = ByteBuffer.wrap(Arrays.copyOfRange(readBuffer, 8, 12))
-            .order(ByteOrder.LITTLE_ENDIAN).getInt();  
-        }else{
-            id = ByteBuffer.wrap(Arrays.copyOfRange(readBuffer, 10, 14))
-            .order(ByteOrder.LITTLE_ENDIAN).getInt();  
+        
+        if (ManageData.version == 0) {
+            id = Integer.toUnsignedLong(
+            ByteBuffer.wrap(Arrays.copyOfRange(readBuffer, 8, 12))
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .getInt()
+            );
+        } else {
+            id = Integer.toUnsignedLong(
+            ByteBuffer.wrap(Arrays.copyOfRange(readBuffer, 10, 14))
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .getInt()
+            );
         }
         System.out.println(id);
-        return id.toString();
+        return Long.toString(id);
+        
     }
     
     
@@ -145,6 +161,10 @@ public class LiveData {
     }
     
     private void readDataLive(byte[] readBufferLive) {
+        if(readBufferLive==null || readBufferLive.length<70){
+            System.out.println("Error: El buffer de lectura es demasiado corto para LiveData V2.");
+            return;
+        }
         setCorrectedVolumen(Arrays.copyOfRange(readBufferLive, 8, 12));
         setUncorrectedVolumen(Arrays.copyOfRange(readBufferLive, 12, 16));
         setCorrectedResidualString(Arrays.copyOfRange(readBufferLive, 16, 20));
@@ -165,6 +185,10 @@ public class LiveData {
         setBaterryVoltage(Arrays.copyOfRange(readBufferLive, 64, 68));
     }
     private void readDataLiveV2(byte[] readBufferLive) {
+        if(readBufferLive==null || readBufferLive.length<76){
+            System.out.println("Error: El buffer de lectura es demasiado corto para LiveData V2.");
+            return;
+        }
         setCorrectedVolumen(Arrays.copyOfRange(readBufferLive, 10, 14));
         setUncorrectedVolumen(Arrays.copyOfRange(readBufferLive, 14, 18));
         setCorrectedResidualString(Arrays.copyOfRange(readBufferLive, 18, 22));
@@ -224,87 +248,87 @@ public class LiveData {
         LocalDateTime now = LocalDateTime.now();
         String Json;
         if (ManageData.version==0){
-        Json = "{" 
-        //+ '"'+ "Id" + '"' + ": " + getSerialRaspi() + ","
-        + '"' + "DeviceUID" + '"' + ": "+'"'+ "12345678"+'"' + ","
-        + '"' + "CorrectedVolume" + '"' + ": " + getCorrectedVolumen() + ","
-        + '"' + "UncorrectedVolume" + '"' + ": " + getUncorrectedVolumen() + ","
-        + '"' + "CorrectedResidual" + '"' + ": " + getCorrectedResidualString() + ","
-        + '"' + "UncorrectedResidual" + '"' + ": " + getUncorrectedResidualString() + ","
-        + '"' + "FlowRate" + '"' + ": " + getFlowRate() + ","
-        + '"' + "UncorrectedUnderFault" + '"' + ": " + getUncorrectUnderFail() + ","
-        + '"' + "Temperature" + '"' + ": " + getTemperature() + ","
-        + '"' + "RawTemperature" + '"' + ": " + getRawtemperature() + ","
-        + '"' + "Pressure" + '"' + ": " + getPressure() + ","
-        + '"' + "RawPressure" + '"' + ": " + getRawpressure() + ","
-        + '"' + "CorrectionFactor" + '"' + ": " + getCorrectionFactor() + ","
-        + '"' + "PresentFaults" + '"' + ": " + getPresentFaults() + ","
-        + '"' + "OccurredFaults" + '"' + ": " + getOccurredFaults() + ","
-        + '"' + "PresentAlarms" + '"' + ": " + getPresentAlarms() + ","
-        + '"' + "OccurredAlarms" + '"' + ": " + getOccurredAlarms() + ","
-        + '"' + "DateTime" + '"' + ": " + getDateTimeMC() + ","
-        + '"' + "BatteryVoltage" + '"' + ": " + getBaterryVoltage()
-        //Agregar un ,
-        //+ '"' + "ZERO_TEMP" + '"' + ": " + getZeroTemp() + ","
-        //+ '"' + "SPAN_TEMP" + '"' + ": " + getSpanTemp() + ","
-        //+ '"' + "ZERO_PRESSURE" + '"' + ": " + getZeroPressure() + ","
-        //+ '"' + "SPAN_PRESSURE" + '"' + ": " + getSpanPressure() + ","
-        /*
-        * + '"' + "Accumulated Correct Volumen Day" + '"' + ": " +
-        * getAccumulatedCorrectVolumencurrentDay() + ","
-        * + '"' + "Accumulated Correct Volumen Past Day" + '"' + ": " +
-        * getAccumulatedCorrectVolumenPastDay() + ","
-        * + '"' + "Accumulated Correct Volumen Month" + '"' + ": " +
-        * getAccumulatedCorrectVolumencurrentMonth() + ","
-        * + '"' + "Accumulated Correct Volumen Past Month" + '"' + ": " +
-        * getAccumulatedCorrectVolumenPreviousMonth() + ","
-        * + '"' + "Highest Daily Volumen Current Month" + '"' + ": " +
-        * getHighestDailyVolumenCurrentMonth() + ","
-        * + '"' + "Highest Daily Volumen Previous Month" + '"' + ": " +
-        * getHighestDailyVolumenPreviousMonth() + ","
-        */ 
-        + "}";
+            Json = "{" 
+            //+ '"'+ "Id" + '"' + ": " + getSerialRaspi() + ","
+            + '"' + "DeviceUID" + '"' + ": "+'"'+ "12345678"+'"' + ","
+            + '"' + "CorrectedVolume" + '"' + ": " + getCorrectedVolumen() + ","
+            + '"' + "UncorrectedVolume" + '"' + ": " + getUncorrectedVolumen() + ","
+            + '"' + "CorrectedResidual" + '"' + ": " + getCorrectedResidualString() + ","
+            + '"' + "UncorrectedResidual" + '"' + ": " + getUncorrectedResidualString() + ","
+            + '"' + "FlowRate" + '"' + ": " + getFlowRate() + ","
+            + '"' + "UncorrectedUnderFault" + '"' + ": " + getUncorrectUnderFail() + ","
+            + '"' + "Temperature" + '"' + ": " + getTemperature() + ","
+            + '"' + "RawTemperature" + '"' + ": " + getRawtemperature() + ","
+            + '"' + "Pressure" + '"' + ": " + getPressure() + ","
+            + '"' + "RawPressure" + '"' + ": " + getRawpressure() + ","
+            + '"' + "CorrectionFactor" + '"' + ": " + getCorrectionFactor() + ","
+            + '"' + "PresentFaults" + '"' + ": " + getPresentFaults() + ","
+            + '"' + "OccurredFaults" + '"' + ": " + getOccurredFaults() + ","
+            + '"' + "PresentAlarms" + '"' + ": " + getPresentAlarms() + ","
+            + '"' + "OccurredAlarms" + '"' + ": " + getOccurredAlarms() + ","
+            + '"' + "DateTime" + '"' + ": " + getDateTimeMC() + ","
+            + '"' + "BatteryVoltage" + '"' + ": " + getBaterryVoltage()
+            //Agregar un ,
+            //+ '"' + "ZERO_TEMP" + '"' + ": " + getZeroTemp() + ","
+            //+ '"' + "SPAN_TEMP" + '"' + ": " + getSpanTemp() + ","
+            //+ '"' + "ZERO_PRESSURE" + '"' + ": " + getZeroPressure() + ","
+            //+ '"' + "SPAN_PRESSURE" + '"' + ": " + getSpanPressure() + ","
+            /*
+            * + '"' + "Accumulated Correct Volumen Day" + '"' + ": " +
+            * getAccumulatedCorrectVolumencurrentDay() + ","
+            * + '"' + "Accumulated Correct Volumen Past Day" + '"' + ": " +
+            * getAccumulatedCorrectVolumenPastDay() + ","
+            * + '"' + "Accumulated Correct Volumen Month" + '"' + ": " +
+            * getAccumulatedCorrectVolumencurrentMonth() + ","
+            * + '"' + "Accumulated Correct Volumen Past Month" + '"' + ": " +
+            * getAccumulatedCorrectVolumenPreviousMonth() + ","
+            * + '"' + "Highest Daily Volumen Current Month" + '"' + ": " +
+            * getHighestDailyVolumenCurrentMonth() + ","
+            * + '"' + "Highest Daily Volumen Previous Month" + '"' + ": " +
+            * getHighestDailyVolumenPreviousMonth() + ","
+            */ 
+            + "}";
         }else{
             Json = "{" 
-        //+ '"'+ "Id" + '"' + ": " + getSerialRaspi() + ","
-        + '"' + "DeviceUID" + '"' + ": " +'"'+ "12345678"+'"' + ","
-        + '"' + "CorrectedVolume" + '"' + ": " + getCorrectedVolumen() + ","
-        + '"' + "UncorrectedVolume" + '"' + ": " + getUncorrectedVolumen() + ","
-        + '"' + "CorrectedResidual" + '"' + ": " + getCorrectedResidualString() + ","
-        + '"' + "UncorrectedResidual" + '"' + ": " + getUncorrectedResidualString() + ","
-        + '"' + "FlowRate" + '"' + ": " + getFlowRate() + ","
-        + '"' + "UncorrectedUnderFault" + '"' + ": " + getUncorrectUnderFail() + ","
-        + '"' + "Temperature" + '"' + ": " + getTemperature() + ","
-        + '"' + "RawTemperature" + '"' + ": " + getRawtemperature() + ","
-        + '"' + "Pressure" + '"' + ": " + getPressure() + ","
-        + '"' + "RawPressure" + '"' + ": " + getRawpressure() + ","
-        + '"' + "CorrectionFactor" + '"' + ": " + getCorrectionFactor() + ","
-        + '"' + "PresentFaults" + '"' + ": " + getPresentFaultsV2() + ","
-        + '"' + "OccurredFaults" + '"' + ": " + getOccurredFaultsV2() + ","
-        + '"' + "PresentAlarms" + '"' + ": " + getPresentAlarmsV2() + ","
-        + '"' + "OccurredAlarms" + '"' + ": " + getOccurredAlarmsV2() + ","
-        + '"' + "DateTime" + '"' + ": " + getDateTimeMC() + ","
-        + '"' + "BatteryVoltage" + '"' + ": " + getBaterryVoltage()
-        //Agregar un ,
-        //+ '"' + "ZERO_TEMP" + '"' + ": " + getZeroTemp() + ","
-        //+ '"' + "SPAN_TEMP" + '"' + ": " + getSpanTemp() + ","
-        //+ '"' + "ZERO_PRESSURE" + '"' + ": " + getZeroPressure() + ","
-        //+ '"' + "SPAN_PRESSURE" + '"' + ": " + getSpanPressure() + ","
-        /*
-        * + '"' + "Accumulated Correct Volumen Day" + '"' + ": " +
-        * getAccumulatedCorrectVolumencurrentDay() + ","
-        * + '"' + "Accumulated Correct Volumen Past Day" + '"' + ": " +
-        * getAccumulatedCorrectVolumenPastDay() + ","
-        * + '"' + "Accumulated Correct Volumen Month" + '"' + ": " +
-        * getAccumulatedCorrectVolumencurrentMonth() + ","
-        * + '"' + "Accumulated Correct Volumen Past Month" + '"' + ": " +
-        * getAccumulatedCorrectVolumenPreviousMonth() + ","
-        * + '"' + "Highest Daily Volumen Current Month" + '"' + ": " +
-        * getHighestDailyVolumenCurrentMonth() + ","
-        * + '"' + "Highest Daily Volumen Previous Month" + '"' + ": " +
-        * getHighestDailyVolumenPreviousMonth() + ","
-        */ 
-        +"}";
+            //+ '"'+ "Id" + '"' + ": " + getSerialRaspi() + ","
+            + '"' + "DeviceUID" + '"' + ": " +'"'+ "12345678"+'"' + ","
+            + '"' + "CorrectedVolume" + '"' + ": " + getCorrectedVolumen() + ","
+            + '"' + "UncorrectedVolume" + '"' + ": " + getUncorrectedVolumen() + ","
+            + '"' + "CorrectedResidual" + '"' + ": " + getCorrectedResidualString() + ","
+            + '"' + "UncorrectedResidual" + '"' + ": " + getUncorrectedResidualString() + ","
+            + '"' + "FlowRate" + '"' + ": " + getFlowRate() + ","
+            + '"' + "UncorrectedUnderFault" + '"' + ": " + getUncorrectUnderFail() + ","
+            + '"' + "Temperature" + '"' + ": " + getTemperature() + ","
+            + '"' + "RawTemperature" + '"' + ": " + getRawtemperature() + ","
+            + '"' + "Pressure" + '"' + ": " + getPressure() + ","
+            + '"' + "RawPressure" + '"' + ": " + getRawpressure() + ","
+            + '"' + "CorrectionFactor" + '"' + ": " + getCorrectionFactor() + ","
+            + '"' + "PresentFaults" + '"' + ": " + getPresentFaultsV2() + ","
+            + '"' + "OccurredFaults" + '"' + ": " + getOccurredFaultsV2() + ","
+            + '"' + "PresentAlarms" + '"' + ": " + getPresentAlarmsV2() + ","
+            + '"' + "OccurredAlarms" + '"' + ": " + getOccurredAlarmsV2() + ","
+            + '"' + "DateTime" + '"' + ": " + getDateTimeMC() + ","
+            + '"' + "BatteryVoltage" + '"' + ": " + getBaterryVoltage()
+            //Agregar un ,
+            //+ '"' + "ZERO_TEMP" + '"' + ": " + getZeroTemp() + ","
+            //+ '"' + "SPAN_TEMP" + '"' + ": " + getSpanTemp() + ","
+            //+ '"' + "ZERO_PRESSURE" + '"' + ": " + getZeroPressure() + ","
+            //+ '"' + "SPAN_PRESSURE" + '"' + ": " + getSpanPressure() + ","
+            /*
+            * + '"' + "Accumulated Correct Volumen Day" + '"' + ": " +
+            * getAccumulatedCorrectVolumencurrentDay() + ","
+            * + '"' + "Accumulated Correct Volumen Past Day" + '"' + ": " +
+            * getAccumulatedCorrectVolumenPastDay() + ","
+            * + '"' + "Accumulated Correct Volumen Month" + '"' + ": " +
+            * getAccumulatedCorrectVolumencurrentMonth() + ","
+            * + '"' + "Accumulated Correct Volumen Past Month" + '"' + ": " +
+            * getAccumulatedCorrectVolumenPreviousMonth() + ","
+            * + '"' + "Highest Daily Volumen Current Month" + '"' + ": " +
+            * getHighestDailyVolumenCurrentMonth() + ","
+            * + '"' + "Highest Daily Volumen Previous Month" + '"' + ": " +
+            * getHighestDailyVolumenPreviousMonth() + ","
+            */ 
+            +"}";
         }
         System.out.println(Json);
         return Json;
@@ -602,7 +626,7 @@ public class LiveData {
         return presentAlarmsV2;
     }
     public void setPresentAlarmsV2(byte[] presentAlarmsV2) {
-            byte low  = presentAlarmsV2[0];
+        byte low  = presentAlarmsV2[0];
         byte high = presentAlarmsV2[1];
         Integer valor = ((high & 0xFF) << 8) | (low & 0xFF);
         this.presentAlarmsV2 = valor.toString();
@@ -611,7 +635,7 @@ public class LiveData {
         return occurredAlarmsV2;
     }
     public void setOccurredAlarmsV2(byte[] occurredAlarmsV2) {
-            byte low  = occurredAlarmsV2[0];
+        byte low  = occurredAlarmsV2[0];
         byte high = occurredAlarmsV2[1];
         Integer valor = ((high & 0xFF) << 8) | (low & 0xFF);
         this.occurredAlarmsV2 = valor.toString();

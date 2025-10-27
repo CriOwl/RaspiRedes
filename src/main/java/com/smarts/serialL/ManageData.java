@@ -25,7 +25,7 @@ public class ManageData {
             } catch (Exception e) {
             }
         }
-        if(liveDataSmarts.serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E,version), 14)).equals("-503119616")){
+        if((liveDataSmarts.serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E,version), 14))).equals("3791847680")){
             version=1;
         }
         if(version==1){
@@ -36,7 +36,6 @@ public class ManageData {
             ConfigM2.idMC2=liveDataSmarts.serialData(SerialHelper.stablishConnection(SerialHelper.createDataRequestPacket((byte) 0x6E,version), 14));
         }
         System.out.println("[DEBUG] idMC2 asignado: " + ConfigM2.idMC2);
-        ConfigM2.setConfiguration();
         System.out.println("[DEBUG] Configuración de MC2 establecida");
         setupDataOneProcess();
         System.out.println("[DEBUG] Constructor ManageData finalizado");

@@ -22,7 +22,8 @@ public class ManageComunications {
         System.out.println("[DEBUG] Constructor ManageComunications finalizado");
     }
     private static void setComunications(){
-        for (int i =0;i<ConfigSensor.brokerMQTT.length;i++) {
+        Thread hilo = new Thread(() -> {
+            for (int i =0;i<ConfigSensor.brokerMQTT.length;i++) {
             mqtt[i]= new Mqtt(i);
         }
         for (int i =0;i<ConfigSensor.uriApi.length;i++) {
@@ -30,6 +31,13 @@ public class ManageComunications {
         }
         for (int i =0;i<ConfigSensor.URIWebS.length;i++) {
             webS[i]= new Websockets(i);
+        }
+        });
+        hilo.start();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
     private static void sendData(String Json,int index){

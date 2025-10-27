@@ -192,14 +192,14 @@ public  class SerialHelper {
                 }
                 if(!comprobationCheckSum(bytesReader)){
                     System.out.println("Error checksum");
-                    return null;
+                    return new byte[0];
                 }
                 serialPort.closePort();
                 return bytesReader;
             } catch (IOException | InterruptedException e) {
                 System.out.println(e+"Error to send Data");
             }
-            return null;
+            return new byte[0];
         };
     }
 
